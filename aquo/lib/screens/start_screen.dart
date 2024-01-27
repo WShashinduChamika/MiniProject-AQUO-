@@ -1,4 +1,5 @@
 import 'package:aquo/screens/home.dart';
+import 'package:aquo/screens/onbord_screen.dart';
 import 'package:flutter/material.dart';
 
 class StartScreen extends StatefulWidget {
@@ -12,7 +13,7 @@ class _StartScreenState extends State<StartScreen> {
   void _handleArrow() {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const HomeScreen()),
+      MaterialPageRoute(builder: (context) => const OnbordScreen()),
     );
   }
 
