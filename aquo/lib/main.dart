@@ -1,5 +1,6 @@
 import 'package:aquo/screens/home.dart';
 import 'package:aquo/screens/splash_screen.dart';
+import 'package:aquo/screens/start_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
