@@ -1,21 +1,22 @@
 import 'package:aquo/reusable_widgets/authenticate_components/form_components/text_field.dart';
-import 'package:aquo/screens/home.dart';
-import 'package:aquo/screens/signup.dart';
+import 'package:aquo/screens/signin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class SiginForm extends StatefulWidget {
-  const SiginForm({super.key});
+class SignupForm extends StatefulWidget {
+  const SignupForm({super.key});
 
   @override
-  State<SiginForm> createState() => _SiginFormState();
+  State<SignupForm> createState() => _SignupFormState();
 }
 
-class _SiginFormState extends State<SiginForm> {
+class _SignupFormState extends State<SignupForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  TextEditingController _userNameController = TextEditingController();
+  TextEditingController _firstNameController = TextEditingController();
+  TextEditingController _lastNameController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
-  bool? isChecked = false;
+  TextEditingController _confirmPasswordController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -34,68 +35,42 @@ class _SiginFormState extends State<SiginForm> {
               image: const AssetImage('images/sign_in/user.png'),
             ),
             SizedBox(
-              height: 114.h,
+              height: 50.h,
             ),
             UserInputField(
-              controller: _userNameController,
+              controller: _firstNameController,
               isPasswordType: false,
-              hintText: 'User name',
+              hintText: 'First Name',
+            ),
+            UserInputField(
+              controller: _lastNameController,
+              isPasswordType: false,
+              hintText: 'Last Name',
+            ),
+            UserInputField(
+              controller: _emailController,
+              isPasswordType: false,
+              hintText: 'Email',
             ),
             UserInputField(
               controller: _passwordController,
               isPasswordType: true,
               hintText: 'Password',
             ),
-            SizedBox(
-              height: 15.h,
-            ),
-            Row(
-              //mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Checkbox(
-                  value: isChecked,
-                  onChanged: (bool? newValue) {
-                    setState(() {
-                      isChecked = newValue;
-                    });
-                  },
-                ),
-                Container(
-                  //margin: EdgeInsets.only(right: (width * 0.2)),
-                  child: Text(
-                    'Remember Password',
-                    style: TextStyle(
-                      fontFamily: 'Roboto',
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.normal,
-                      color: const Color(0xFFBDC1BB),
-                    ),
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.only(left: (7.5.w)),
-                  child: Text(
-                    'Forgot Password?',
-                    style: TextStyle(
-                      fontFamily: 'Roboto',
-                      fontSize: 13.sp,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFFEFFAF6),
-                    ),
-                  ),
-                ),
-              ],
+            UserInputField(
+              controller: _confirmPasswordController,
+              isPasswordType: true,
+              hintText: 'Confirm Password',
             ),
             SizedBox(
-              height: 1.624.h,
+              height: 25.h,
             ),
             SizedBox(
               width: 131.w,
               height: 32.h,
               child: ElevatedButton(
                 onPressed: () {
-                  print(_userNameController.text);
-                  print(_passwordController.text);
+                  print("Saved");
                 },
                 style: ElevatedButton.styleFrom(
                   primary: const Color(0xFFFFFFFF),
@@ -105,7 +80,7 @@ class _SiginFormState extends State<SiginForm> {
                   ),
                 ),
                 child: Text(
-                  'Sign in',
+                  'Sign up',
                   style: TextStyle(
                     fontFamily: 'Lato',
                     fontSize: 16.sp,
@@ -143,7 +118,7 @@ class _SiginFormState extends State<SiginForm> {
                     ),
                   ),
                   SizedBox(
-                    height: 21.436.h,
+                    height: 21.46.h,
                     width: 19.98.w,
                     child: Image(
                       height: 21.h,
@@ -158,12 +133,12 @@ class _SiginFormState extends State<SiginForm> {
               height: 23.h,
             ),
             Container(
-              width: 205.w,
+              width: 236.w,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Don't have an account?",
+                    "Already have an account?",
                     style: TextStyle(
                       fontFamily: 'Roboto',
                       fontSize: 14.sp,
@@ -173,10 +148,10 @@ class _SiginFormState extends State<SiginForm> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      navigateSignUp(context);
+                      navigateSignIn(context);
                     },
                     child: Text(
-                      "Sign up",
+                      "Login now",
                       style: TextStyle(
                         fontFamily: 'Roboto',
                         fontSize: 14.sp,
@@ -194,12 +169,12 @@ class _SiginFormState extends State<SiginForm> {
     );
   }
 
-  void navigateSignUp(BuildContext context) {
+  void navigateSignIn(BuildContext context) {
     print("Signup");
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const SignupScreen(),
+        builder: (context) => const SigninScreen(),
       ),
     );
   }
