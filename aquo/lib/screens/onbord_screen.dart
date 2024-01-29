@@ -2,6 +2,7 @@ import 'package:aquo/screens/home.dart';
 import 'package:aquo/screens/onbord_screens/intropage01.dart';
 import 'package:aquo/screens/onbord_screens/intropage02.dart';
 import 'package:aquo/screens/onbord_screens/intropage03.dart';
+import 'package:aquo/screens/signin.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -113,7 +114,7 @@ class _OnbordScreenState extends State<OnbordScreen> {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const HomeScreen()),
+                            builder: (context) => const SigninScreen()),
                       );
                     },
                     style: ElevatedButton.styleFrom(
