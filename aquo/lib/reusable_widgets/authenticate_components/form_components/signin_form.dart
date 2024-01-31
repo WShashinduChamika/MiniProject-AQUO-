@@ -96,6 +96,10 @@ class _SiginFormState extends State<SiginForm> {
                 onPressed: () {
                   print(_userNameController.text);
                   print(_passwordController.text);
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const HomeScreen()),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   primary: const Color(0xFFFFFFFF),
