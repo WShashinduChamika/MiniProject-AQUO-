@@ -5,6 +5,8 @@ import 'package:aquo/reusable_widgets/home_components/cloudStatus_and_temp_%20to
 import 'package:aquo/reusable_widgets/home_components/cloudStatus_and_temp_%20tools/weather_tooltype01.dart';
 import 'package:aquo/reusable_widgets/home_components/navbar.dart';
 import 'package:aquo/reusable_widgets/home_components/top_menu.dart';
+import 'package:aquo/reusable_widgets/system_switches/main_switch.dart';
+import 'package:aquo/reusable_widgets/system_switches/system_switch.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -34,6 +36,11 @@ class _HomeScreenState extends State<HomeScreen> {
   String humidity = "";
   String windSpeed = "";
   String sunLightLevel = "";
+
+  //variable to check switches status
+  bool isMainSwitchOn = false;
+  bool isFertilizerSwitchOn = false;
+  bool isWateringSwitchOn = false;
 
   @override
   Widget build(BuildContext context) {
@@ -167,6 +174,66 @@ class _HomeScreenState extends State<HomeScreen> {
                     //end of the calender and weather tools part
                     SizedBox(
                       height: 22.h,
+                    ),
+                    SizedBox(
+                      height: 22.h,
+                    ),
+                    //begininng of the main switch
+                    Container(
+                      width: 329.w,
+                      height: 165.h,
+                      child: MainSwitch(
+                        isMainSwitchOn: isMainSwitchOn,
+                        isMainSwitchOnValue: (value) {
+                          setState(() {
+                            isMainSwitchOn = value;
+                          });
+                        },
+                        isWateringSwitchOn: isWateringSwitchOn,
+                        isWateringSwitchOnValue: (value) {
+                          setState(() {
+                            isWateringSwitchOn = value;
+                          });
+                        },
+                        isFertilizerSwitchOn: isFertilizerSwitchOn,
+                        isFertilizerSwitchOnValue: (value) {
+                          setState(() {
+                            isFertilizerSwitchOn = value;
+                          });
+                        },
+                      ),
+                    ),
+                    //end of the main switch
+                    SizedBox(
+                      height: 46.h,
+                    ),
+                    //Begining of the fertilizer switch
+                    SystemSwitch(
+                        isMainSwitchOn: isMainSwitchOn,
+                        isSwitchOn: isFertilizerSwitchOn,
+                        isSwitchOnValue: (value) {
+                          setState(() {
+                            isFertilizerSwitchOn = value;
+                          });
+                        },
+                        systemType: "Fertilizer"),
+                    //End of the fertilizer switch
+                    SizedBox(
+                      height: 14.h,
+                    ),
+                    //Begining of the watering switch
+                    SystemSwitch(
+                        isMainSwitchOn: isMainSwitchOn,
+                        isSwitchOn: isWateringSwitchOn,
+                        isSwitchOnValue: (value) {
+                          setState(() {
+                            isWateringSwitchOn = value;
+                          });
+                        },
+                        systemType: "Watering"),
+                    //end of the watering switch
+                    SizedBox(
+                      height: 20.h,
                     ),
                   ],
                 ),
