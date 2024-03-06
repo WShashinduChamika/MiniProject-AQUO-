@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "776135688708",
+    "firebase_url": "https://aquo-f9d38-default-rtdb.firebaseio.com",
+    "project_id": "aquo-f9d38",
+    "storage_bucket": "aquo-f9d38.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:776135688708:android:849b1ac12c901f9b866b51",
+        "android_client_info": {
+          "package_name": "com.example.aquo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "776135688708-v67lh48s8ed2uc34h8ud0qo5isv52vt5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.aquo",
+            "certificate_hash": "fd7376fd830e476c765d0c5ff66e61fdb98c5273"
+          }
+        },
+        {
+          "client_id": "776135688708-k7d4t9ek3hh4asep8ss0hqa1t0vvtmij.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCb5AUJ8G3k9ZrXUXg3iiw17JVOJ6nq3lU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "776135688708-k7d4t9ek3hh4asep8ss0hqa1t0vvtmij.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "776135688708-g6ag0asredp0nodi5lvr9phr8bm7nals.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.aquo.RunnerTests"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
