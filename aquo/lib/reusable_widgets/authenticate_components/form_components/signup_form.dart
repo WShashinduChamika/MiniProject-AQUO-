@@ -1,5 +1,6 @@
 import 'package:aquo/reusable_widgets/authenticate_components/form_components/text_field.dart';
 import 'package:aquo/screens/signin.dart';
+import 'package:aquo/services/authenticate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -17,6 +18,10 @@ class _SignupFormState extends State<SignupForm> {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _confirmPasswordController = TextEditingController();
+
+  final AuthServices _auth = AuthServices();
+  bool isSignup = false;
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -69,23 +74,45 @@ class _SignupFormState extends State<SignupForm> {
               width: 131.w,
               height: 32.h,
               child: ElevatedButton(
-                onPressed: () {
-                  print("Saved");
+                onPressed: () async {
+                  setState(() {
+                    isSignup = true;
+                  });
+                   checkSignup(
+                      _firstNameController.text,
+                      _lastNameController.text,
+                      _emailController.text,
+                      _passwordController.text,
+                      _confirmPasswordController.text,
+                      context);
+                  await Future.delayed(const Duration(milliseconds: 1000));
+                  setState(() {
+                    isSignup = false;
+                  });
                 },
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: const Color(0xFF5A66D5), backgroundColor: const Color(0xFFFFFFFF),
+                  foregroundColor: const Color(0xFF5A66D5),
+                  backgroundColor: const Color(0xFFFFFFFF),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(29.232.r),
                   ),
                 ),
-                child: Text(
-                  'Sign up',
-                  style: TextStyle(
-                    fontFamily: 'Lato',
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.normal,
-                  ),
-                ),
+                child: !isSignup
+                    ? Text(
+                        'Sign up',
+                        style: TextStyle(
+                          fontFamily: 'Lato',
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.normal,
+                        ),
+                      )
+                    : Container(
+                        height: 25.h,
+                        width: 25.w,
+                        child: const CircularProgressIndicator(
+                          color: Colors.blue,
+                        ),
+                      ),
               ),
             ),
             SizedBox(
@@ -167,6 +194,20 @@ class _SignupFormState extends State<SignupForm> {
       ),
     );
   }
+  
+  void checkSignup(
+      String firstName,
+      String lastName,
+      String email,
+      String password,
+      String confirmPassword,
+      BuildContext context) async {
+    await _auth.signUpWithEmailPassword(firstName, lastName, email, password,
+        confirmPassword, context);
+
+    // ignore: use_build_context_synchronously
+    FocusScope.of(context).unfocus();
+  }
 
   void navigateSignIn(BuildContext context) {
     print("Signup");
@@ -177,4 +218,6 @@ class _SignupFormState extends State<SignupForm> {
       ),
     );
   }
+
+
 }
