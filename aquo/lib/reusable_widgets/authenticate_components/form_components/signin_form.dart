@@ -23,6 +23,8 @@ class _SiginFormState extends State<SiginForm> {
   final AuthServices _auth = AuthServices();
   bool isSignin = false;
 
+  Map<String, dynamic>? _userData;
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -156,7 +158,7 @@ class _SiginFormState extends State<SiginForm> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   GestureDetector(
-                      onTap: () async {
+                    onTap: () async {
                       UserCredential? user =
                           await _auth.signInWithGoogle(context);
                       print(user);
@@ -171,13 +173,25 @@ class _SiginFormState extends State<SiginForm> {
                       ),
                     ),
                   ),
-                  SizedBox(
-                    height: 21.436.h,
-                    width: 19.98.w,
-                    child: Image(
-                      height: 21.h,
-                      width: 20.w,
-                      image: const AssetImage('images/sign_in/fb.png'),
+                  GestureDetector(
+                    onTap: () async{
+                       UserCredential? user = await _auth.signInWithFacebook();
+                      if (user != null) {
+                        //isFacebookUser = true;
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const HomeScreen()));
+                      }
+                    },
+                    child: SizedBox(
+                      height: 21.436.h,
+                      width: 19.98.w,
+                      child: Image(
+                        height: 21.h,
+                        width: 20.w,
+                        image: const AssetImage('images/sign_in/fb.png'),
+                      ),
                     ),
                   ),
                 ],
@@ -223,8 +237,7 @@ class _SiginFormState extends State<SiginForm> {
     );
   }
 
-  void checkSignin(
-      String email, String password, BuildContext context) async {
+  void checkSignin(String email, String password, BuildContext context) async {
     await _auth.signinWithEmailAndPassword(email, password, context);
 
     // ignore: use_build_context_synchronously
