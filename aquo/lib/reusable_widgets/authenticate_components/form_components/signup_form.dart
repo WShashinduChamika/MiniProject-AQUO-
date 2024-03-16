@@ -1,7 +1,9 @@
 import 'package:aquo/reusable_widgets/authenticate_components/form_components/text_field.dart';
+import 'package:aquo/screens/home.dart';
 import 'package:aquo/screens/signin.dart';
 import 'package:aquo/services/authenticate.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -80,7 +82,7 @@ class _SignupFormState extends State<SignupForm> {
                   setState(() {
                     isSignup = true;
                   });
-                   checkSignup(
+                  checkSignup(
                       _firstNameController.text,
                       _lastNameController.text,
                       _emailController.text,
@@ -152,13 +154,26 @@ class _SignupFormState extends State<SignupForm> {
                       ),
                     ),
                   ),
-                  SizedBox(
-                    height: 21.46.h,
-                    width: 19.98.w,
-                    child: Image(
-                      height: 21.h,
-                      width: 20.w,
-                      image: const AssetImage('images/sign_in/fb.png'),
+                  GestureDetector(
+                    onTap: () async {
+                      UserCredential? user = await _auth.signInWithFacebook();
+                      if (user != null) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const HomeScreen(),
+                          ),
+                        );
+                      }
+                    },
+                    child: SizedBox(
+                      height: 21.46.h,
+                      width: 19.98.w,
+                      child: Image(
+                        height: 21.h,
+                        width: 20.w,
+                        image: const AssetImage('images/sign_in/fb.png'),
+                      ),
                     ),
                   ),
                 ],
@@ -203,16 +218,11 @@ class _SignupFormState extends State<SignupForm> {
       ),
     );
   }
-  
-  void checkSignup(
-      String firstName,
-      String lastName,
-      String email,
-      String password,
-      String confirmPassword,
-      BuildContext context) async {
-    await _auth.signUpWithEmailPassword(firstName, lastName, email, password,
-        confirmPassword, context);
+
+  void checkSignup(String firstName, String lastName, String email,
+      String password, String confirmPassword, BuildContext context) async {
+    await _auth.signUpWithEmailPassword(
+        firstName, lastName, email, password, confirmPassword, context);
 
     // ignore: use_build_context_synchronously
     FocusScope.of(context).unfocus();
@@ -227,6 +237,4 @@ class _SignupFormState extends State<SignupForm> {
       ),
     );
   }
-
-
 }
