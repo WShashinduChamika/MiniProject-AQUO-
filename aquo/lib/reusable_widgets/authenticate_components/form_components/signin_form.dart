@@ -3,6 +3,7 @@ import 'package:aquo/screens/home.dart';
 import 'package:aquo/screens/signup.dart';
 import 'package:aquo/services/authenticate.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -156,7 +157,7 @@ class _SiginFormState extends State<SiginForm> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   GestureDetector(
-                      onTap: () async {
+                    onTap: () async {
                       UserCredential? user =
                           await _auth.signInWithGoogle(context);
                       print(user);
@@ -171,13 +172,26 @@ class _SiginFormState extends State<SiginForm> {
                       ),
                     ),
                   ),
-                  SizedBox(
-                    height: 21.436.h,
-                    width: 19.98.w,
-                    child: Image(
-                      height: 21.h,
-                      width: 20.w,
-                      image: const AssetImage('images/sign_in/fb.png'),
+                  GestureDetector(
+                    onTap: () async {
+                      UserCredential? user = await _auth.signInWithFacebook();
+                      if (user != null) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const HomeScreen(),
+                          ),
+                        );
+                      }
+                    },
+                    child: SizedBox(
+                      height: 21.436.h,
+                      width: 19.98.w,
+                      child: Image(
+                        height: 21.h,
+                        width: 20.w,
+                        image: const AssetImage('images/sign_in/fb.png'),
+                      ),
                     ),
                   ),
                 ],
@@ -223,8 +237,7 @@ class _SiginFormState extends State<SiginForm> {
     );
   }
 
-  void checkSignin(
-      String email, String password, BuildContext context) async {
+  void checkSignin(String email, String password, BuildContext context) async {
     await _auth.signinWithEmailAndPassword(email, password, context);
 
     // ignore: use_build_context_synchronously

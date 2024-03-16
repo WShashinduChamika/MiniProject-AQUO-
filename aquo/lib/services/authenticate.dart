@@ -1,7 +1,10 @@
+
+
 import 'package:aquo/screens/home.dart';
 import 'package:aquo/screens/signin.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthServices {
@@ -118,7 +121,23 @@ class AuthServices {
 
     return userCredential;
   }
+  
+   Future<UserCredential> signInWithFacebook() async {
+    final LoginResult result =
+        await FacebookAuth.instance.login(permissions: ['email']);
 
+    if (result.status == LoginStatus.success) {
+      final userData = await FacebookAuth.instance.getUserData();
+    } else {
+      print(result.message);
+    }
+
+    final OAuthCredential facebookAuthCredential =
+        FacebookAuthProvider.credential(result.accessToken!.token);
+
+    return FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
+  }
+  
    Future signOut(BuildContext context) async {
     await _googleSignIn.signOut();
     await _auth.signOut().then((value) {
