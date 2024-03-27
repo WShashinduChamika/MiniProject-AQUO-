@@ -1,5 +1,6 @@
 import 'package:aquo/firebase_options.dart';
 import 'package:aquo/screens/home.dart';
+import 'package:aquo/screens/map.dart';
 import 'package:aquo/screens/splash_screen.dart';
 import 'package:aquo/screens/start_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -31,7 +32,7 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
         ),
         debugShowCheckedModeBanner: false,
-        home: const SplashScreen(),
+        home: const CurrentLocationMap(),
       ),
     );
   }

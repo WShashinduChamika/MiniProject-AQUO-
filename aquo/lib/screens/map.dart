@@ -1,3 +1,6 @@
+import 'package:aquo/global.dart';
+import 'package:aquo/services/db.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -16,6 +19,8 @@ class _CurrentLocationMapState extends State<CurrentLocationMap> {
     zoom: 14.0,
   );
   Set<Marker> markers = {};
+
+  final DatabaseServices _db = DatabaseServices();
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +59,14 @@ class _CurrentLocationMapState extends State<CurrentLocationMap> {
               ),
             );
             setState(() {});
+            User? user = FirebaseAuth.instance.currentUser;
+            isLocationSet = true;
+            String uid = isGmailUser ? user!.uid : emailUID;
+            _db.setLocation(
+              uid,
+              position.longitude.toString(),
+              position.latitude.toString(),
+            );
           } catch (e) {
             // Handle error
             print(e.toString());
