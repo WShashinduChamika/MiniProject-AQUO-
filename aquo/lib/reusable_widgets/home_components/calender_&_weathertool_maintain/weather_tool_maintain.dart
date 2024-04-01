@@ -1,3 +1,4 @@
+import 'package:aquo/global.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -33,10 +34,14 @@ class _WeatherToolMaintainState extends State<WeatherToolMaintain> {
       children: [
         GestureDetector(
           onTap: () {
-            setState(() {
-              bool updateVlaue = !widget.isClicked;
-              widget.isClickedValue(updateVlaue);
-            });
+            if (isLocationSet) {
+              setState(() {
+                bool updateVlaue = !widget.isClicked;
+                widget.isClickedValue(updateVlaue);
+              });
+            } else {
+              _showSetLocationDialog();
+            }
           },
           child: Container(
             height: 28.h,
@@ -85,6 +90,27 @@ class _WeatherToolMaintainState extends State<WeatherToolMaintain> {
           ),
         )
       ],
+    );
+  }
+
+  void _showSetLocationDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Set Location"),
+          content:
+              const Text("Please set location for showing weather details."),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

@@ -8,7 +8,6 @@ class DatabaseServices {
   final CollectionReference locationCollection =
       FirebaseFirestore.instance.collection("Location");
 
- 
   //set location details
   Future setLocation(uid, String longitude, String latitude) async {
     try {
@@ -21,5 +20,12 @@ class DatabaseServices {
     }
   }
 
-  
+  //get location details
+  Future getLocation(uid) async {
+    try {
+      return await locationCollection.doc(uid).get();
+    } catch (e) {
+      print(e);
+    }
+  }
 }
