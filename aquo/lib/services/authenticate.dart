@@ -1,5 +1,6 @@
 
 
+import 'package:aquo/global.dart';
 import 'package:aquo/screens/home.dart';
 import 'package:aquo/screens/signin.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -118,6 +119,7 @@ class AuthServices {
       context,
       MaterialPageRoute(builder: (context) => const HomeScreen()),
     );
+    isGmailUser = true;
 
     return userCredential;
   }

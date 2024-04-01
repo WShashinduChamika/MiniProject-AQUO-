@@ -1,3 +1,4 @@
+import 'package:aquo/global.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -48,8 +49,13 @@ class _TempCloudToolsState extends State<TempCloudTools> {
           onTap: () {
             //print('cloud ' + widget.cloud_status);
             setState(() {
-              bool updateValeu = !widget.isClicked;
-              widget.isClickedValueOn(updateValeu);
+              print(isLocationSet);
+              if (isLocationSet) {
+                bool updateValeu = !widget.isClicked;
+                widget.isClickedValueOn(updateValeu);
+              } else {
+                _showSetLocationDialog();
+              }
               //print('Tempreature ' + widget.temprature);
             });
           },
@@ -76,9 +82,31 @@ class _TempCloudToolsState extends State<TempCloudTools> {
               fontSize: 14.sp,
               color: Color(0xFFEFFAF6),
             ),
+             
           ),
         ),
       ],
+    );
+  }
+
+  void _showSetLocationDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Set Location"),
+          content:
+              const Text("Please set location for showing weather details."),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

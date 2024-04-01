@@ -1,3 +1,4 @@
+import 'package:aquo/global.dart';
 import 'package:aquo/reusable_widgets/home_components/calender_&_weathertool_maintain/calernder.dart';
 import 'package:aquo/reusable_widgets/home_components/calender_&_weathertool_maintain/weather_tool.dart';
 import 'package:aquo/reusable_widgets/home_components/calender_&_weathertool_maintain/weather_tool_maintain.dart';
@@ -8,6 +9,10 @@ import 'package:aquo/reusable_widgets/home_components/status_level/status_level_
 import 'package:aquo/reusable_widgets/home_components/top_menu.dart';
 import 'package:aquo/reusable_widgets/system_switches/main_switch.dart';
 import 'package:aquo/reusable_widgets/system_switches/system_switch.dart';
+import 'package:aquo/services/db.dart';
+import 'package:aquo/services/weather.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -34,7 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
   //variables to set weather details
   String cloudStatus = "";
   String temprature = "";
-  String humidity = "";
+  String humidityE = "";
   String windSpeed = "";
   String sunLightLevel = "";
 
@@ -42,6 +47,10 @@ class _HomeScreenState extends State<HomeScreen> {
   bool isMainSwitchOn = false;
   bool isFertilizerSwitchOn = false;
   bool isWateringSwitchOn = false;
+
+  //variables to call database and authentication
+  final DatabaseServices _db = DatabaseServices();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -127,7 +136,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 height: 45.h,
                                 width: 300.w,
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     WeatherToolMaintain(
                                       bgclr: const Color(0xFFFFDC30),
@@ -159,7 +169,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       bgclr: const Color(0xFFACDBFF),
                                       img: 'images/home/humidity.png',
                                       txt1: "Humidity",
-                                      txt2: '$humidity %',
+                                      txt2: '$humidityE %',
                                       isClickedValue: (value) {
                                         setState(() {
                                           isHumidityClicked = value;
@@ -307,6 +317,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 isToolOnValue: (value) {
                   setState(() {
                     isHumidityToolOn = value;
+                    setWeatherDetails();
                   });
                 },
                 left: 192.w,
@@ -321,5 +332,62 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> setWeatherDetails() async {
+  final WeatherService wservice = WeatherService('17616021dbc6c5abe5bb6d8029d52b99');
+  String uid = isGmailUser || isFacebookUser ? _auth.currentUser!.uid : emailUID;
+  DocumentSnapshot? documentSnapshot = await _db.getLocation(uid);
+  print(documentSnapshot);
+
+  if (documentSnapshot != null && documentSnapshot.exists) {
+    String latitude = documentSnapshot["Latitude"];
+    String longitude = documentSnapshot["Longitude"];
+    print(longitude + "" + latitude);
+    
+    try {
+      Map<String, dynamic>? weatherData = await wservice.getWeather(latitude, longitude);
+      
+      setState(() {
+        cloudStatus = '${weatherData?['clouds']['all']}';
+        temprature = '${(weatherData?['main']['temp'] - 273.15).toStringAsFixed(2)}';
+        humidityE = '${weatherData?['main']['humidity']}';
+        windSpeed = '${weatherData?['wind']['speed']}';
+        int sunRiseTime = weatherData?['sys']['sunrise'];
+        int sunSetTime = weatherData?['sys']['sunset'];
+        
+        calculateSinligtLevel(sunRiseTime, sunSetTime);
+        print("sunlightlevel $sunLightLevel");
+      });
+    } catch (e) {
+      // Handle any errors that occur during weather data retrieval
+    }
+  } else {
+    // Handle the case where the documentSnapshot is null or does not exist
+  }
+}
+
+  void calculateSinligtLevel(int sunRiseTime, int sunSetTime) {
+    int currentTime = DateTime.now().millisecondsSinceEpoch;
+    int sunriseTime = sunRiseTime;
+    int sunsetTime = sunSetTime;
+
+    // Calculate the daylight duration
+    int daylightDuration = sunsetTime - sunriseTime;
+
+    // Calculate the current time in daylight
+    int currentTimeInDaylight = currentTime - sunriseTime;
+
+    // Calculate the sunlight level as a percentage
+    double sunlightLevel = ((currentTimeInDaylight / daylightDuration) * 100);
+    sunLightLevel = sunlightLevel.toStringAsFixed(2).substring(0, 1);
+    print(sunLightLevel);
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    setWeatherDetails();
   }
 }
