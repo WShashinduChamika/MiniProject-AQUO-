@@ -1,7 +1,11 @@
 import 'package:aquo/reusable_widgets/authenticate_components/form_components/text_field.dart';
 import 'package:aquo/screens/home.dart';
 import 'package:aquo/screens/signup.dart';
+import 'package:aquo/services/authenticate.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SiginForm extends StatefulWidget {
@@ -16,6 +20,10 @@ class _SiginFormState extends State<SiginForm> {
   TextEditingController _userNameController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   bool? isChecked = false;
+
+  final AuthServices _auth = AuthServices();
+  bool isSignin = false;
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -93,29 +101,40 @@ class _SiginFormState extends State<SiginForm> {
               width: 131.w,
               height: 32.h,
               child: ElevatedButton(
-                onPressed: () {
-                  print(_userNameController.text);
-                  print(_passwordController.text);
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const HomeScreen()),
-                  );
+                onPressed: () async {
+                  setState(() {
+                    isSignin = true;
+                  });
+                  checkSignin(_userNameController.text,
+                      _passwordController.text, context);
+                  await Future.delayed(const Duration(milliseconds: 500));
+                  setState(() {
+                    isSignin = false;
+                  });
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: const Color(0xFFFFFFFF),
-                  onPrimary: const Color(0xFF5A66D5),
+                  foregroundColor: const Color(0xFF5A66D5),
+                  backgroundColor: const Color(0xFFFFFFFF),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(29.232.r),
                   ),
                 ),
-                child: Text(
-                  'Sign in',
-                  style: TextStyle(
-                    fontFamily: 'Lato',
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.normal,
-                  ),
-                ),
+                child: !isSignin
+                    ? Text(
+                        'Sign in',
+                        style: TextStyle(
+                          fontFamily: 'Lato',
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.normal,
+                        ),
+                      )
+                    : Container(
+                        height: 25.h,
+                        width: 25.w,
+                        child: const CircularProgressIndicator(
+                          color: Colors.blue,
+                        ),
+                      ),
               ),
             ),
             SizedBox(
@@ -137,22 +156,42 @@ class _SiginFormState extends State<SiginForm> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  SizedBox(
-                    height: 21.46.h,
-                    width: 19.98.w,
-                    child: Image(
-                      height: 21.h,
-                      width: 20.w,
-                      image: const AssetImage('images/sign_in/google.png'),
+                  GestureDetector(
+                    onTap: () async {
+                      UserCredential? user =
+                          await _auth.signInWithGoogle(context);
+                      print(user);
+                    },
+                    child: SizedBox(
+                      height: 21.46.h,
+                      width: 19.98.w,
+                      child: Image(
+                        height: 21.h,
+                        width: 20.w,
+                        image: const AssetImage('images/sign_in/google.png'),
+                      ),
                     ),
                   ),
-                  SizedBox(
-                    height: 21.436.h,
-                    width: 19.98.w,
-                    child: Image(
-                      height: 21.h,
-                      width: 20.w,
-                      image: const AssetImage('images/sign_in/fb.png'),
+                  GestureDetector(
+                    onTap: () async {
+                      UserCredential? user = await _auth.signInWithFacebook();
+                      if (user != null) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const HomeScreen(),
+                          ),
+                        );
+                      }
+                    },
+                    child: SizedBox(
+                      height: 21.436.h,
+                      width: 19.98.w,
+                      child: Image(
+                        height: 21.h,
+                        width: 20.w,
+                        image: const AssetImage('images/sign_in/fb.png'),
+                      ),
                     ),
                   ),
                 ],
@@ -196,6 +235,13 @@ class _SiginFormState extends State<SiginForm> {
         ),
       ),
     );
+  }
+
+  void checkSignin(String email, String password, BuildContext context) async {
+    await _auth.signinWithEmailAndPassword(email, password, context);
+
+    // ignore: use_build_context_synchronously
+    FocusScope.of(context).unfocus();
   }
 
   void navigateSignUp(BuildContext context) {
