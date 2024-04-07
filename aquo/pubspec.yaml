@@ -45,6 +45,7 @@ dependencies:
   geolocator: ^11.0.0
   google_maps_flutter: ^2.6.0
   cloud_firestore: ^4.15.10
+  flutter_local_notifications: ^17.0.0
   
 
 dev_dependencies:
