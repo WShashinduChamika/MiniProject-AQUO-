@@ -7,6 +7,12 @@ class DatabaseServices {
 
   final CollectionReference locationCollection =
       FirebaseFirestore.instance.collection("Location");
+  
+   final CollectionReference IOTCollection =
+      FirebaseFirestore.instance.collection("IOTUnit");
+   
+   final CollectionReference notificationCollection =
+      FirebaseFirestore.instance.collection("Notifications");
 
   //set location details
   Future setLocation(uid, String longitude, String latitude) async {
@@ -27,5 +33,18 @@ class DatabaseServices {
     } catch (e) {
       print(e);
     }
+  }
+
+  Future setNotification(docId, uid, String notificationTitle,
+      String notificationMessage, String receviedDateTime) async {
+    try {
+      await notificationCollection.doc(docId).set({
+        "UID": uid,
+        "Notification Title": notificationTitle,
+        "Notification Message": notificationMessage,
+        "Received Date Time": receviedDateTime
+      });
+      return true;
+    } catch (e) {}
   }
 }
