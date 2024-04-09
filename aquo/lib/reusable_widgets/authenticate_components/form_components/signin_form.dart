@@ -1,6 +1,11 @@
+import 'package:aquo/global.dart';
 import 'package:aquo/reusable_widgets/authenticate_components/form_components/text_field.dart';
-import 'package:aquo/screens/home.dart';
+import 'package:aquo/screens/default_home.dart';
+import 'package:aquo/screens/forgot_password.dart';
 import 'package:aquo/screens/signup.dart';
+import 'package:aquo/services/authenticate.dart';
+import 'package:aquo/services/db.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -16,6 +21,13 @@ class _SiginFormState extends State<SiginForm> {
   TextEditingController _userNameController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   bool? isChecked = false;
+  bool isSignin = false;
+  final AuthServices _auth = AuthServices();
+  final DatabaseServices _db = DatabaseServices();
+  String contactNumber = "";
+
+  Map<String, dynamic>? _userData;
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -40,11 +52,13 @@ class _SiginFormState extends State<SiginForm> {
               controller: _userNameController,
               isPasswordType: false,
               hintText: 'User name',
+              isPhoneType: false,
             ),
             UserInputField(
               controller: _passwordController,
               isPasswordType: true,
               hintText: 'Password',
+              isPhoneType: false,
             ),
             SizedBox(
               height: 15.h,
@@ -52,54 +66,67 @@ class _SiginFormState extends State<SiginForm> {
             Row(
               //mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Checkbox(
-                  value: isChecked,
-                  onChanged: (bool? newValue) {
-                    setState(() {
-                      isChecked = newValue;
-                    });
+                // Checkbox(
+                //   value: isChecked,
+                //   onChanged: (bool? newValue) {
+                //     setState(() {
+                //       isChecked = newValue;
+                //     });
+                //   },
+                // ),
+                // Container(
+                //   //margin: EdgeInsets.only(right: (width * 0.2)),
+                //   child: Text(
+                //     'Remember Password',
+                //     style: TextStyle(
+                //       fontFamily: 'Roboto',
+                //       fontSize: 12.sp,
+                //       fontWeight: FontWeight.normal,
+                //       color: const Color(0xFFBDC1BB),
+                //     ),
+                //   ),
+                // ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ForgotPassword(),
+                      ),
+                    );
                   },
-                ),
-                Container(
-                  //margin: EdgeInsets.only(right: (width * 0.2)),
-                  child: Text(
-                    'Remember Password',
-                    style: TextStyle(
-                      fontFamily: 'Roboto',
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.normal,
-                      color: const Color(0xFFBDC1BB),
-                    ),
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.only(left: (7.5.w)),
-                  child: Text(
-                    'Forgot Password?',
-                    style: TextStyle(
-                      fontFamily: 'Roboto',
-                      fontSize: 13.sp,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFFEFFAF6),
+                  child: Container(
+                    margin: EdgeInsets.only(left: (150.5.w)),
+                    child: Text(
+                      'Forgot Password?',
+                      style: TextStyle(
+                        fontFamily: 'Roboto',
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFFEFFAF6),
+                      ),
                     ),
                   ),
                 ),
               ],
             ),
             SizedBox(
-              height: 1.624.h,
+              height: 15.h,
             ),
             SizedBox(
               width: 131.w,
               height: 32.h,
               child: ElevatedButton(
-                onPressed: () {
-                  print(_userNameController.text);
-                  print(_passwordController.text);
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const HomeScreen()),
-                  );
+                onPressed: () async {
+                  setState(() {
+                    isSignin = true;
+                  });
+                  checkAuthentication(_userNameController.text,
+                      _passwordController.text, context);
+                  await Future.delayed(const Duration(seconds: 1));
+                  setState(() {
+                    isSignin = false;
+                  });
                 },
                 style: ElevatedButton.styleFrom(
                   foregroundColor: const Color(0xFF5A66D5),
@@ -108,14 +135,22 @@ class _SiginFormState extends State<SiginForm> {
                     borderRadius: BorderRadius.circular(29.232.r),
                   ),
                 ),
-                child: Text(
-                  'Sign in',
-                  style: TextStyle(
-                    fontFamily: 'Lato',
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.normal,
-                  ),
-                ),
+                child: !isSignin
+                    ? Text(
+                        'Sign in',
+                        style: TextStyle(
+                          fontFamily: 'Lato',
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.normal,
+                        ),
+                      )
+                    : Container(
+                        height: 25.h,
+                        width: 25.w,
+                        child: const CircularProgressIndicator(
+                          color: Colors.blue,
+                        ),
+                      ),
               ),
             ),
             SizedBox(
@@ -137,22 +172,41 @@ class _SiginFormState extends State<SiginForm> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  SizedBox(
-                    height: 21.46.h,
-                    width: 19.98.w,
-                    child: Image(
-                      height: 21.h,
-                      width: 20.w,
-                      image: const AssetImage('images/sign_in/google.png'),
+                  GestureDetector(
+                    onTap: () async {
+                      UserCredential? user =
+                          await _auth.signInWithGoogle(context);
+                      print(user);
+                    },
+                    child: SizedBox(
+                      height: 21.46.h,
+                      width: 19.98.w,
+                      child: Image(
+                        height: 21.h,
+                        width: 20.w,
+                        image: const AssetImage('images/sign_in/google.png'),
+                      ),
                     ),
                   ),
-                  SizedBox(
-                    height: 21.436.h,
-                    width: 19.98.w,
-                    child: Image(
-                      height: 21.h,
-                      width: 20.w,
-                      image: const AssetImage('images/sign_in/fb.png'),
+                  GestureDetector(
+                    onTap: () async {
+                      UserCredential? user = await _auth.signInWithFacebook();
+                      if (user != null) {
+                        isFacebookUser = true;
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const DefaultHomeScreen()));
+                      }
+                    },
+                    child: SizedBox(
+                      height: 21.436.h,
+                      width: 19.98.w,
+                      child: Image(
+                        height: 21.h,
+                        width: 20.w,
+                        image: const AssetImage('images/sign_in/fb.png'),
+                      ),
                     ),
                   ),
                 ],
@@ -177,7 +231,15 @@ class _SiginFormState extends State<SiginForm> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      navigateSignUp(context);
+                      setState(() {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SignupScreen(),
+                          ),
+                        );
+                      });
+                      //navigateSignUp(context);
                     },
                     child: Text(
                       "Sign up",
@@ -207,4 +269,13 @@ class _SiginFormState extends State<SiginForm> {
       ),
     );
   }
+
+  void checkAuthentication(
+      String email, String password, BuildContext context) async {
+    await _auth.signinWithEmailAndPassword(email, password, context);
+    // ignore: use_build_context_synchronously
+    FocusScope.of(context).unfocus();
+  }
+
+  
 }
