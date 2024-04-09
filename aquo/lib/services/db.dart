@@ -5,6 +5,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class DatabaseServices {
   //create user collection
 
+  final CollectionReference userCollection =
+      FirebaseFirestore.instance.collection("User");
+
   final CollectionReference locationCollection =
       FirebaseFirestore.instance.collection("Location");
   
@@ -13,7 +16,22 @@ class DatabaseServices {
    
    final CollectionReference notificationCollection =
       FirebaseFirestore.instance.collection("Notifications");
-
+   
+    final CollectionReference ESPCollection =
+      FirebaseFirestore.instance.collection("EspData");
+   
+  //get user data
+  Future getUser(uid) async {
+    try {
+      DocumentSnapshot documentSnapshot = await userCollection.doc(uid).get();
+      if (documentSnapshot.exists) {
+        print("User");
+        return documentSnapshot;
+      }
+    } catch (error) {
+      print('error $error');
+    }
+  }
   //set location details
   Future setLocation(uid, String longitude, String latitude) async {
     try {
@@ -33,6 +51,11 @@ class DatabaseServices {
     } catch (e) {
       print(e);
     }
+  }
+  
+  //get sensor data
+  Future getSensorData(uid) async{
+    return await ESPCollection.doc(uid).get();
   }
 
   Future setNotification(docId, uid, String notificationTitle,
