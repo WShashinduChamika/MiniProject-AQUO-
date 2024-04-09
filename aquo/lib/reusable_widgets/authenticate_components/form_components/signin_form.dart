@@ -102,8 +102,8 @@ class _SiginFormState extends State<SiginForm> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: const Color(0xFFFFFFFF),
-                  onPrimary: const Color(0xFF5A66D5),
+                  foregroundColor: const Color(0xFF5A66D5),
+                  backgroundColor: const Color(0xFFFFFFFF),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(29.232.r),
                   ),
