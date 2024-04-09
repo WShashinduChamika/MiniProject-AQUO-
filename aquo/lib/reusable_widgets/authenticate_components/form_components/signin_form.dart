@@ -1,14 +1,12 @@
 import 'package:aquo/global.dart';
 import 'package:aquo/reusable_widgets/authenticate_components/form_components/text_field.dart';
 import 'package:aquo/screens/default_home.dart';
-import 'package:aquo/screens/home.dart';
+import 'package:aquo/screens/forgot_password.dart';
 import 'package:aquo/screens/signup.dart';
 import 'package:aquo/services/authenticate.dart';
 import 'package:aquo/services/db.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SiginForm extends StatefulWidget {
@@ -68,32 +66,37 @@ class _SiginFormState extends State<SiginForm> {
             Row(
               //mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Checkbox(
-                  value: isChecked,
-                  onChanged: (bool? newValue) {
-                    setState(() {
-                      isChecked = newValue;
-                    });
-                  },
-                ),
-                Container(
-                  //margin: EdgeInsets.only(right: (width * 0.2)),
-                  child: Text(
-                    'Remember Password',
-                    style: TextStyle(
-                      fontFamily: 'Roboto',
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.normal,
-                      color: const Color(0xFFBDC1BB),
-                    ),
-                  ),
-                ),
+                // Checkbox(
+                //   value: isChecked,
+                //   onChanged: (bool? newValue) {
+                //     setState(() {
+                //       isChecked = newValue;
+                //     });
+                //   },
+                // ),
+                // Container(
+                //   //margin: EdgeInsets.only(right: (width * 0.2)),
+                //   child: Text(
+                //     'Remember Password',
+                //     style: TextStyle(
+                //       fontFamily: 'Roboto',
+                //       fontSize: 12.sp,
+                //       fontWeight: FontWeight.normal,
+                //       color: const Color(0xFFBDC1BB),
+                //     ),
+                //   ),
+                // ),
                 GestureDetector(
                   onTap: () {
-                   
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ForgotPassword(),
+                      ),
+                    );
                   },
                   child: Container(
-                    margin: EdgeInsets.only(left: (7.5.w)),
+                    margin: EdgeInsets.only(left: (150.5.w)),
                     child: Text(
                       'Forgot Password?',
                       style: TextStyle(
@@ -108,7 +111,7 @@ class _SiginFormState extends State<SiginForm> {
               ],
             ),
             SizedBox(
-              height: 1.624.h,
+              height: 15.h,
             ),
             SizedBox(
               width: 131.w,
