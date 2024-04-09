@@ -1,4 +1,6 @@
+import 'package:aquo/global.dart';
 import 'package:aquo/reusable_widgets/home_components/status_level/status_level.dart';
+import 'package:aquo/screens/soil_moisture.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -35,7 +37,17 @@ class _StatusLevelListState extends State<StatusLevelList> {
               txt2: 'Soil',
               txt3: 'Moisture',
               arrowBgClr: const Color(0xFFBA58E6),
-              navigateT0: () {}),
+              navigateT0: () {
+                if (systemID.isNotEmpty) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const SoilMoistureLevel()),
+                  );
+                } else {
+                  _showSetSystemIDDialog();
+                }
+              }),
           StatusLevel(
             bgclr: const Color(0xFF3ED400),
             img: 'images/home/download.png',
@@ -74,6 +86,35 @@ class _StatusLevelListState extends State<StatusLevelList> {
           ),
         ],
       ),
+    );
+  }
+  void _showSetSystemIDDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            "Set SystemID",
+            style: TextStyle(
+              color: Color.fromARGB(255, 71, 12, 82),
+            ),
+          ),
+          content: const Text(
+            "Please set systemID for viewing soil moisture status.",
+            style: TextStyle(
+              color: Color.fromARGB(255, 71, 12, 82),
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

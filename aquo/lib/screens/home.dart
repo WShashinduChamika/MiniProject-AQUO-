@@ -63,17 +63,18 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: StreamBuilder(
-        stream: isGmailUser || isFacebookUser
-            ? FirebaseFirestore.instance
-                .collection('IOTUnit')
-                .doc(_auth.currentUser!.uid)
-                .snapshots()
-            : FirebaseFirestore.instance
-                .collection('IOTUnit')
-                .doc(emailUID)
-                .snapshots(),
+        stream:systemID.isNotEmpty?FirebaseFirestore.instance
+            .collection('EspData')
+            .doc(systemID)
+            .snapshots():FirebaseFirestore.instance
+            .collection('EspData')
+            .doc("DHT")
+            .snapshots(),
         builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-          
+          // if (snapshot.connectionState == ConnectionState.waiting) {
+          //   return Center(child: CircularProgressIndicator());
+          // }
+
           if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           }
@@ -83,33 +84,46 @@ class _HomeScreenState extends State<HomeScreen> {
             return const DefaultHomeScreen();
           }
 
-          var humidity = snapshot.data!.get('SoilMoistureLevel') ?? "0";
-          var isHumiditySet = false;
-          isRecivedNotificatiion =
-              snapshot.data!.get('SetNotificationStatus') ?? "0";
-          if (humidity == '20') {
-            isHumiditySet = true;
-            print(humidity);
-          } else {
-            isHumiditySet = false;
-            _db.IOTCollection.doc(_auth.currentUser!.uid)
-                .update({"SetNotificationStatus": false});
-          }
-          String notificationTitle = "Humidity Notification";
-          String notificationMessage = "Please on the watering switch";
-          DateTime currentDateTime = DateTime.now();
-          String receviedDateTime = currentDateTime.toString();
+          var humidity = snapshot.data!.get('Temperature') ?? "0";
+            var isHumiditySet = false;
+            print("Temprature"+humidity);
+            print("System"+systemID);
+            isRecivedNotificatiion =
+                snapshot.data!.get('SetNotificationStatus') ?? "0";
+           if (humidity == '28.00') {
+                isHumiditySet = true;
+                print(humidity);
+              } else {
+                isHumiditySet = false;
+                if(systemID.isNotEmpty){
+                  //print(systemID);
+                  _db.ESPCollection
+                   .doc(systemID)
+                   .update({"SetNotificationStatus": false});
+                }
+              }
+              String notificationTitle = "Humidity Notification";
+              String notificationMessage = "Please on the watering switch";
+              DateTime currentDateTime = DateTime.now();
+              String receviedDateTime = currentDateTime.toString();
+              // if (isHumiditySet && !isRecivedNotificatiion) {
 
-          if (isHumiditySet && !isRecivedNotificatiion) {
-            LocalNotification().showSimpleNotification(
-                title: notificationTitle,
-                body: notificationMessage,
-                payload: "This is simple data");
-            _db.setNotification(receviedDateTime, _auth.currentUser!.uid,
-                notificationTitle, notificationMessage, receviedDateTime);
-            _db.IOTCollection.doc(_auth.currentUser!.uid)
-                .update({"SetNotificationStatus": true});
-          } else {}
+              // }
+
+              if (isHumiditySet && !isRecivedNotificatiion) {
+                LocalNotification().showSimpleNotification(
+                    title: notificationTitle,
+                    body: notificationMessage,
+                    payload: "This is simple data");
+                _db.setNotification(receviedDateTime, _auth.currentUser!.uid,
+                    notificationTitle, notificationMessage, receviedDateTime);
+                if(systemID.isNotEmpty){
+                   print("notification come");
+                   _db.ESPCollection
+                    .doc(systemID)
+                    .update({"SetNotificationStatus": true});
+                }
+              } else {}
 
           return SafeArea(
             child: Stack(
