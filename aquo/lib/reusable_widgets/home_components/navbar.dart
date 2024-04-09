@@ -1,5 +1,7 @@
 import 'package:aquo/reusable_widgets/home_components/menubar_component.dart';
+import 'package:aquo/screens/future_implement.dart';
 import 'package:aquo/screens/map.dart';
+import 'package:aquo/screens/notiscreen.dart';
 import 'package:aquo/services/authenticate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -38,7 +40,7 @@ class _NavBarState extends State<NavBar> {
                 },
                 top: 5.h,
                 buttonBehaviour: () {
-                  print('hello');
+                  //print('hello');
                 },
                 img: 'images/home/blog.png'),
             MenuBarComponent(
@@ -50,7 +52,13 @@ class _NavBarState extends State<NavBar> {
                   });
                 },
                 top: 65.h,
-                buttonBehaviour: () {},
+                buttonBehaviour: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const FutureImplementScreen()),
+                  );
+                },
                 img: 'images/home/clock.png'),
             MenuBarComponent(
                 isClicked: widget.isMenuBarClicked,
@@ -61,7 +69,13 @@ class _NavBarState extends State<NavBar> {
                   });
                 },
                 top: 125.h,
-                buttonBehaviour: () {},
+                buttonBehaviour: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const FutureImplementScreen()),
+                  );
+                },
                 img: 'images/home/help.png'),
             MenuBarComponent(
                 isClicked: widget.isMenuBarClicked,
@@ -72,7 +86,9 @@ class _NavBarState extends State<NavBar> {
                   });
                 },
                 top: 185.h,
-                buttonBehaviour: () {},
+                buttonBehaviour: () {
+                  
+                },
                 img: 'images/home/user.png'),
             MenuBarComponent(
                 isClicked: widget.isMenuBarClicked,
@@ -83,7 +99,13 @@ class _NavBarState extends State<NavBar> {
                   });
                 },
                 top: 245.h,
-                buttonBehaviour: () {},
+                buttonBehaviour: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const NotificationScreen()),
+                  );
+                },
                 img: 'images/home/notification.png'),
             MenuBarComponent(
                 isClicked: widget.isMenuBarClicked,
@@ -94,7 +116,13 @@ class _NavBarState extends State<NavBar> {
                   });
                 },
                 top: 640.h,
-                buttonBehaviour: () {},
+                buttonBehaviour: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const FutureImplementScreen()),
+                  );
+                },
                 img: 'images/home/question.png'),
             MenuBarComponent(
                 isClicked: widget.isMenuBarClicked,

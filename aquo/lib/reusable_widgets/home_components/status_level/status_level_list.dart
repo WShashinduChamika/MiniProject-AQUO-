@@ -1,5 +1,6 @@
 import 'package:aquo/global.dart';
 import 'package:aquo/reusable_widgets/home_components/status_level/status_level.dart';
+import 'package:aquo/screens/future_implement.dart';
 import 'package:aquo/screens/soil_moisture.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -28,7 +29,13 @@ class _StatusLevelListState extends State<StatusLevelList> {
             txt2: 'Water',
             txt3: 'Level',
             arrowBgClr: const Color(0xFF789AF3),
-            navigateT0: () {},
+            navigateT0: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const FutureImplementScreen()),
+              );
+            },
           ),
           StatusLevel(
               bgclr: const Color(0xFF7D00B5),
@@ -55,7 +62,13 @@ class _StatusLevelListState extends State<StatusLevelList> {
             txt2: 'Power',
             txt3: 'Supply',
             arrowBgClr: const Color(0xFF7EE355),
-            navigateT0: () {},
+            navigateT0: () {
+               Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const FutureImplementScreen()),
+                  );
+            },
           ),
           StatusLevel(
             bgclr: const Color(0xFFFF007C),
@@ -64,7 +77,13 @@ class _StatusLevelListState extends State<StatusLevelList> {
             txt2: 'Fertilizer',
             txt3: 'Status',
             arrowBgClr: const Color(0xFFE15398),
-            navigateT0: () {},
+            navigateT0: () {
+               Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const FutureImplementScreen()),
+                  );
+            },
           ),
           StatusLevel(
             bgclr: const Color(0xFF3ED400),
@@ -73,7 +92,13 @@ class _StatusLevelListState extends State<StatusLevelList> {
             txt2: 'Power',
             txt3: 'Supply',
             arrowBgClr: const Color(0xFF7EE355),
-            navigateT0: () {},
+            navigateT0: () {
+               Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const FutureImplementScreen()),
+                  );
+            },
           ),
           StatusLevel(
             bgclr: const Color(0xFF7D00B5),
@@ -82,12 +107,19 @@ class _StatusLevelListState extends State<StatusLevelList> {
             txt2: 'Power',
             txt3: 'Supply',
             arrowBgClr: const Color(0xFFBA58E6),
-            navigateT0: () {},
+            navigateT0: () {
+               Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const FutureImplementScreen()),
+                  );
+            },
           ),
         ],
       ),
     );
   }
+
   void _showSetSystemIDDialog() {
     showDialog(
       context: context,
