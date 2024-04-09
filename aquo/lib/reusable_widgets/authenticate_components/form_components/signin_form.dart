@@ -1,7 +1,10 @@
+import 'package:aquo/global.dart';
 import 'package:aquo/reusable_widgets/authenticate_components/form_components/text_field.dart';
+import 'package:aquo/screens/default_home.dart';
 import 'package:aquo/screens/home.dart';
 import 'package:aquo/screens/signup.dart';
 import 'package:aquo/services/authenticate.dart';
+import 'package:aquo/services/db.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -20,9 +23,12 @@ class _SiginFormState extends State<SiginForm> {
   TextEditingController _userNameController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   bool? isChecked = false;
-
-  final AuthServices _auth = AuthServices();
   bool isSignin = false;
+  final AuthServices _auth = AuthServices();
+  final DatabaseServices _db = DatabaseServices();
+  String contactNumber = "";
+
+  Map<String, dynamic>? _userData;
 
   @override
   Widget build(BuildContext context) {
@@ -48,11 +54,13 @@ class _SiginFormState extends State<SiginForm> {
               controller: _userNameController,
               isPasswordType: false,
               hintText: 'User name',
+              isPhoneType: false,
             ),
             UserInputField(
               controller: _passwordController,
               isPasswordType: true,
               hintText: 'Password',
+              isPhoneType: false,
             ),
             SizedBox(
               height: 15.h,
@@ -80,15 +88,20 @@ class _SiginFormState extends State<SiginForm> {
                     ),
                   ),
                 ),
-                Container(
-                  margin: EdgeInsets.only(left: (7.5.w)),
-                  child: Text(
-                    'Forgot Password?',
-                    style: TextStyle(
-                      fontFamily: 'Roboto',
-                      fontSize: 13.sp,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFFEFFAF6),
+                GestureDetector(
+                  onTap: () {
+                   
+                  },
+                  child: Container(
+                    margin: EdgeInsets.only(left: (7.5.w)),
+                    child: Text(
+                      'Forgot Password?',
+                      style: TextStyle(
+                        fontFamily: 'Roboto',
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFFEFFAF6),
+                      ),
                     ),
                   ),
                 ),
@@ -105,9 +118,9 @@ class _SiginFormState extends State<SiginForm> {
                   setState(() {
                     isSignin = true;
                   });
-                  checkSignin(_userNameController.text,
+                  checkAuthentication(_userNameController.text,
                       _passwordController.text, context);
-                  await Future.delayed(const Duration(milliseconds: 500));
+                  await Future.delayed(const Duration(seconds: 1));
                   setState(() {
                     isSignin = false;
                   });
@@ -176,12 +189,11 @@ class _SiginFormState extends State<SiginForm> {
                     onTap: () async {
                       UserCredential? user = await _auth.signInWithFacebook();
                       if (user != null) {
+                        isFacebookUser = true;
                         Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const HomeScreen(),
-                          ),
-                        );
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const DefaultHomeScreen()));
                       }
                     },
                     child: SizedBox(
@@ -216,7 +228,15 @@ class _SiginFormState extends State<SiginForm> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      navigateSignUp(context);
+                      setState(() {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SignupScreen(),
+                          ),
+                        );
+                      });
+                      //navigateSignUp(context);
                     },
                     child: Text(
                       "Sign up",
@@ -237,13 +257,6 @@ class _SiginFormState extends State<SiginForm> {
     );
   }
 
-  void checkSignin(String email, String password, BuildContext context) async {
-    await _auth.signinWithEmailAndPassword(email, password, context);
-
-    // ignore: use_build_context_synchronously
-    FocusScope.of(context).unfocus();
-  }
-
   void navigateSignUp(BuildContext context) {
     print("Signup");
     Navigator.push(
@@ -253,4 +266,13 @@ class _SiginFormState extends State<SiginForm> {
       ),
     );
   }
+
+  void checkAuthentication(
+      String email, String password, BuildContext context) async {
+    await _auth.signinWithEmailAndPassword(email, password, context);
+    // ignore: use_build_context_synchronously
+    FocusScope.of(context).unfocus();
+  }
+
+  
 }

@@ -1,5 +1,6 @@
 import 'package:aquo/reusable_widgets/authenticate_components/form_components/text_field.dart';
 import 'package:aquo/screens/home.dart';
+import 'package:aquo/screens/otp.dart';
 import 'package:aquo/screens/signin.dart';
 import 'package:aquo/services/authenticate.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -22,9 +23,9 @@ class _SignupFormState extends State<SignupForm> {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _confirmPasswordController = TextEditingController();
-
-  final AuthServices _auth = AuthServices();
+  TextEditingController _phoneNumberController = TextEditingController();
   bool isSignup = false;
+  AuthServices _auth = AuthServices();
 
   @override
   Widget build(BuildContext context) {
@@ -50,46 +51,58 @@ class _SignupFormState extends State<SignupForm> {
               controller: _firstNameController,
               isPasswordType: false,
               hintText: 'First Name',
+              isPhoneType: false,
             ),
             UserInputField(
               controller: _lastNameController,
               isPasswordType: false,
               hintText: 'Last Name',
+              isPhoneType: false,
             ),
             UserInputField(
               controller: _emailController,
               isPasswordType: false,
               hintText: 'Email',
+              isPhoneType: false,
             ),
             UserInputField(
               controller: _passwordController,
               isPasswordType: true,
               hintText: 'Password',
+              isPhoneType: false,
             ),
             UserInputField(
               controller: _confirmPasswordController,
               isPasswordType: true,
               hintText: 'Confirm Password',
+              isPhoneType: false,
+            ),
+            UserInputField(
+              controller: _phoneNumberController,
+              isPasswordType: false,
+              hintText: 'Contact Number',
+              isPhoneType: true,
             ),
             SizedBox(
               height: 25.h,
             ),
             SizedBox(
               width: 131.w,
-              height: 32.h,
+              height: 35.h,
               child: ElevatedButton(
                 onPressed: () async {
                   setState(() {
                     isSignup = true;
                   });
-                  checkSignup(
+                  checkAuthentication(
                       _firstNameController.text,
                       _lastNameController.text,
                       _emailController.text,
                       _passwordController.text,
                       _confirmPasswordController.text,
+                      _phoneNumberController.text,
                       context);
-                  await Future.delayed(const Duration(milliseconds: 1000));
+                  await Future.delayed(const Duration(seconds: 2));
                   setState(() {
                     isSignup = false;
                   });
@@ -120,7 +133,7 @@ class _SignupFormState extends State<SignupForm> {
               ),
             ),
             SizedBox(
-              height: 16.h,
+              height: 10.h,
             ),
             Text(
               'Sign in with',
@@ -142,7 +155,6 @@ class _SignupFormState extends State<SignupForm> {
                     onTap: () async {
                       UserCredential? user =
                           await _auth.signInWithGoogle(context);
-                      print(user);
                     },
                     child: SizedBox(
                       height: 21.46.h,
@@ -154,26 +166,13 @@ class _SignupFormState extends State<SignupForm> {
                       ),
                     ),
                   ),
-                  GestureDetector(
-                    onTap: () async {
-                      UserCredential? user = await _auth.signInWithFacebook();
-                      if (user != null) {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const HomeScreen(),
-                          ),
-                        );
-                      }
-                    },
-                    child: SizedBox(
-                      height: 21.46.h,
-                      width: 19.98.w,
-                      child: Image(
-                        height: 21.h,
-                        width: 20.w,
-                        image: const AssetImage('images/sign_in/fb.png'),
-                      ),
+                  SizedBox(
+                    height: 21.46.h,
+                    width: 19.98.w,
+                    child: Image(
+                      height: 21.h,
+                      width: 20.w,
+                      image: const AssetImage('images/sign_in/fb.png'),
                     ),
                   ),
                 ],
@@ -219,15 +218,6 @@ class _SignupFormState extends State<SignupForm> {
     );
   }
 
-  void checkSignup(String firstName, String lastName, String email,
-      String password, String confirmPassword, BuildContext context) async {
-    await _auth.signUpWithEmailPassword(
-        firstName, lastName, email, password, confirmPassword, context);
-
-    // ignore: use_build_context_synchronously
-    FocusScope.of(context).unfocus();
-  }
-
   void navigateSignIn(BuildContext context) {
     print("Signup");
     Navigator.push(
@@ -237,4 +227,96 @@ class _SignupFormState extends State<SignupForm> {
       ),
     );
   }
+
+  void checkAuthentication(
+      String firstName,
+      String lastName,
+      String email,
+      String password,
+      String confirmPassword,
+      String phoneNumber,
+      BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => OTPVerification(
+          // isSignup: true,
+          // firstName: firstName,
+          // lastName: lastName,
+          // email: email,
+          // password: password,
+          // confirmPassword: confirmPassword,
+          // phoneNumber: phoneNumber,
+        ),
+      ),
+    );
+
+    // ignore: use_build_context_synchronously
+    FocusScope.of(context).unfocus();
+  }
+
+  // void validateEmail(String value) {
+  //   if (value == null || value.isEmpty) {
+  //     setState(() {
+  //       emailError = null;
+  //     });
+  //     // setState(() {
+  //     //   emailError = 'Email is required';
+  //     // });
+  //   } else if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+  //       .hasMatch(value)) {
+  //     setState(() {
+  //       emailError = "Email is not valid";
+  //     });
+  //   } else {
+  //     setState(() {
+  //       emailError = null;
+  //     });
+  //   }
+  // }
+
+  // void checkPasswordStrength(String value) {
+  //   if (value.length < 8 && value.length >= 1) {
+  //     setState(() {
+  //       passwordError = 'Password must be at least 8 characters';
+  //     });
+  //   } else if (value.length == 0) {
+  //     setState(() {
+  //       passwordError = null;
+  //     });
+  //   } else if (!RegExp(r'[a-z]').hasMatch(value)) {
+  //     setState(() {
+  //       passwordError = 'Password must contain at least one lowercase letter';
+  //     });
+  //   } else if (!RegExp(r'[A-Z]').hasMatch(value)) {
+  //     setState(() {
+  //       passwordError = 'Password must contain at least one uppercase letter';
+  //     });
+  //   } else if (!RegExp(r'\d').hasMatch(value)) {
+  //     setState(() {
+  //       passwordError = 'Password must contain at least one digit';
+  //     });
+  //   } else if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value)) {
+  //     setState(() {
+  //       passwordError = 'Password must contain at least one special character';
+  //     });
+  //   } else {
+  //     setState(() {
+  //       passwordError = null;
+  //     });
+  //   }
+  // }
+
+  // void checkConfirmPassword(String value) {
+  //   if (value != _passwordController.text) {
+  //     setState(() {
+  //       confirmPasswordError = 'Password does not matched';
+  //     });
+  //   } else {
+  //     setState(() {
+  //       confirmPasswordError = null;
+  //     });
+  //   }
+  // }
 }
+

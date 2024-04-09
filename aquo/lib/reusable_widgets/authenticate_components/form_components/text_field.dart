@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+
 class UserInputField extends StatefulWidget {
   final TextEditingController controller;
   final bool isPasswordType;
   final String hintText;
+  final bool isPhoneType;
+
   const UserInputField({
-    super.key,
+    Key? key,
     required this.controller,
     required this.isPasswordType,
     required this.hintText,
-  });
+    required this.isPhoneType,
+  }) : super(key: key);
 
   @override
   State<UserInputField> createState() => _UserInputFieldState();
@@ -18,6 +22,7 @@ class UserInputField extends StatefulWidget {
 
 class _UserInputFieldState extends State<UserInputField> {
   bool _obscureText = false;
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -27,7 +32,11 @@ class _UserInputFieldState extends State<UserInputField> {
       ),
       child: Container(
         height: 35.h,
-        child: TextField(
+        child: TextFormField(
+          // Use TextFormField instead of TextField
+
+          keyboardType:
+              widget.isPhoneType ? TextInputType.phone : TextInputType.text,
           cursorColor: Colors.white,
           controller: widget.controller,
           obscureText:
@@ -53,7 +62,7 @@ class _UserInputFieldState extends State<UserInputField> {
                       });
                     },
                   )
-                : IconButton(onPressed: () {}, icon: const Icon(null)),
+                : null, // Removed unnecessary IconButton for non-password fields
             contentPadding: EdgeInsets.only(left: 5.0),
             hintText: '${widget.hintText}:',
             hintStyle: TextStyle(
@@ -69,7 +78,6 @@ class _UserInputFieldState extends State<UserInputField> {
               borderSide: BorderSide(color: Color.fromARGB(255, 214, 212, 212)),
             ),
           ),
-          //maxLength: 20,
         ),
       ),
     );

@@ -20,6 +20,23 @@ class DatabaseServices {
     final CollectionReference ESPCollection =
       FirebaseFirestore.instance.collection("EspData");
    
+  //set user data
+  Future setUser(uid, String firstName, String lastName, String email,
+      String contactNumber) async {
+    try {
+      await userCollection.doc(uid).set({
+        "FirstName": firstName,
+        "LastName": lastName,
+        "Email": email,
+        "ContactNumber": contactNumber,
+        "SystemID": "",
+        "Profile-img": ""
+      });
+    } catch (e) {
+      print('error is $e');
+    }
+  }
+
   //get user data
   Future getUser(uid) async {
     try {
