@@ -1,3 +1,7 @@
+import 'package:aquo/global.dart';
+import 'package:aquo/services/db.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -18,6 +22,8 @@ class SystemSwitch extends StatefulWidget {
 }
 
 class _SystemSwitchState extends State<SystemSwitch> {
+  final DatabaseServices _db = DatabaseServices();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -60,11 +66,57 @@ class _SystemSwitchState extends State<SystemSwitch> {
           ),
           GestureDetector(
             onTap: widget.isMainSwitchOn
-                ? () {
+                ? () async{
+                  String uid = systemID;
+                  DocumentSnapshot documentSnapshot = await _db.getSwitchStatus(uid);
+                  String fertilizerStatus = documentSnapshot['FertilizerSwitchStatus'];
+                  String wateringStatus = documentSnapshot['pump'];
                     setState(() {
                       bool updateValue = !widget.isSwitchOn;
                       widget.isSwitchOnValue(updateValue);
                     });
+                    if(widget.systemType=="Watering"){
+                      
+                      if(!widget.isSwitchOn){
+                          if(fertilizerStatus=="on"){
+                              //_db.setSwitchStatus(uid,true,true,true);
+                              _db.setSwitchStatus(uid,"on","on","on");
+                          }else{
+                             //_db.setSwitchStatus(uid,true,true,false);
+                              _db.setSwitchStatus(uid,"on","on","off");
+                          }
+                            
+                      }
+                      else{
+                            if(fertilizerStatus=="on"){
+                              //_db.setSwitchStatus(uid,true,false,true);
+                              _db.setSwitchStatus(uid,"on","off","on");
+                          }else{
+                             //_db.setSwitchStatus(uid,true,false,false);
+                              _db.setSwitchStatus(uid,"on","off","off");
+                          }
+                      }
+                    }
+                    else{
+                      if(!widget.isSwitchOn){
+                            if(wateringStatus=="on"){
+                             // _db.setSwitchStatus(uid,true,true,true);
+                              _db.setSwitchStatus(uid,"on","on","on");
+                          }else{
+                             //_db.setSwitchStatus(uid,true,false,true);
+                             _db.setSwitchStatus(uid,"on","off","on");
+                          }
+                      }
+                      else{
+                          if(wateringStatus=="on"){
+                              //_db.setSwitchStatus(uid,true,true,false);
+                               _db.setSwitchStatus(uid,"on","on","off");
+                          }else{
+                             //_db.setSwitchStatus(uid,true,false,false);
+                             _db.setSwitchStatus(uid,"on","off","off");
+                          }
+                      }
+                    }
                   }
                 : () {},
             child: Container(

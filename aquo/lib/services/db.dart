@@ -37,6 +37,22 @@ class DatabaseServices {
     }
   }
 
+  Future updateUser(uid, String firstName, String lastName, String email,
+      String contactNumber, String systemID) async {
+    try {
+      print(uid);
+      await userCollection.doc(uid).update({
+        "FirstName": firstName,
+        "LastName": lastName,
+        "Email": email,
+        "ContactNumber": contactNumber,
+        "SystemID": systemID
+      });
+    } catch (e) {
+      print('error is $e');
+    }
+  }
+
   //get user data
   Future getUser(uid) async {
     try {
@@ -49,6 +65,16 @@ class DatabaseServices {
       print('error $error');
     }
   }
+
+  Future getUserDP(uid) async {
+    try {
+      DocumentSnapshot documentSnapshot = await userCollection.doc(uid).get();
+      return documentSnapshot;
+    } catch (e) {
+      print("error $e");
+    }
+  }
+
   //set location details
   Future setLocation(uid, String longitude, String latitude) async {
     try {
@@ -70,6 +96,20 @@ class DatabaseServices {
     }
   }
   
+  //set switch status
+  Future setSwitchStatus(uid, String mainSwitchStatus,
+      String wateringSwitchStatus, String fertilizerSwitchStatus) async {
+    await ESPCollection.doc(uid).update({
+      "MainSwitchStatus": mainSwitchStatus,
+      "pump": wateringSwitchStatus,
+      "FertilizerSwitchStatus": fertilizerSwitchStatus,
+    });
+  }
+
+  Future getSwitchStatus(uid) async {
+    return await ESPCollection.doc(uid).get();
+  }
+
   //get sensor data
   Future getSensorData(uid) async{
     return await ESPCollection.doc(uid).get();
