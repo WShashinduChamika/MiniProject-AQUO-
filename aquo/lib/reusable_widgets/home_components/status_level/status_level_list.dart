@@ -63,11 +63,11 @@ class _StatusLevelListState extends State<StatusLevelList> {
             txt3: 'Supply',
             arrowBgClr: const Color(0xFF7EE355),
             navigateT0: () {
-               Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const FutureImplementScreen()),
-                  );
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const FutureImplementScreen()),
+              );
             },
           ),
           StatusLevel(
@@ -78,11 +78,11 @@ class _StatusLevelListState extends State<StatusLevelList> {
             txt3: 'Status',
             arrowBgClr: const Color(0xFFE15398),
             navigateT0: () {
-               Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const FutureImplementScreen()),
-                  );
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const FutureImplementScreen()),
+              );
             },
           ),
           StatusLevel(
@@ -93,11 +93,11 @@ class _StatusLevelListState extends State<StatusLevelList> {
             txt3: 'Supply',
             arrowBgClr: const Color(0xFF7EE355),
             navigateT0: () {
-               Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const FutureImplementScreen()),
-                  );
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const FutureImplementScreen()),
+              );
             },
           ),
           StatusLevel(
@@ -108,11 +108,11 @@ class _StatusLevelListState extends State<StatusLevelList> {
             txt3: 'Supply',
             arrowBgClr: const Color(0xFFBA58E6),
             navigateT0: () {
-               Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const FutureImplementScreen()),
-                  );
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const FutureImplementScreen()),
+              );
             },
           ),
         ],
