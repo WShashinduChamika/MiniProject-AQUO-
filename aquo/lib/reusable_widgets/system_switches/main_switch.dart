@@ -1,3 +1,6 @@
+import 'package:aquo/global.dart';
+import 'package:aquo/services/db.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -22,6 +25,15 @@ class MainSwitch extends StatefulWidget {
 }
 
 class _MainSwitchState extends State<MainSwitch> {
+   late DatabaseServices _db;
+  late FirebaseAuth _auth;
+
+  @override
+  void initState() {
+    super.initState();
+    _db = DatabaseServices();
+    _auth = FirebaseAuth.instance;
+  }
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -62,15 +74,29 @@ class _MainSwitchState extends State<MainSwitch> {
             Container(
               child: GestureDetector(
                 onTap: () {
-                  setState(() {
-                    bool updateValue = !widget.isMainSwitchOn;
-                    widget.isMainSwitchOnValue(updateValue);
-
-                    if (!updateValue) {
-                      widget.isFertilizerSwitchOnValue(false);
-                      widget.isWateringSwitchOnValue(false);
+                  String uid = systemID;
+                  if (systemID.isNotEmpty) {
+                    setState(() {
+                      bool updateValue = !widget.isMainSwitchOn;
+                      widget.isMainSwitchOnValue(updateValue);
+                      if (!updateValue) {
+                        widget.isFertilizerSwitchOnValue(false);
+                        widget.isWateringSwitchOnValue(false);
+                        //await _db.setSwitchStatus(uid,false,false,false);
+                      }
+                    });
+                  }
+                  if (systemID.isNotEmpty) {
+                    if (!widget.isMainSwitchOn) {
+                      //_db.setSwitchStatus(uid, true, false, false);
+                       _db.setSwitchStatus(uid, "on", "off", "off");
+                    } else {
+                      // _db.setSwitchStatus(uid, false, false, false);
+                      _db.setSwitchStatus(uid, "off", "off", "off");
                     }
-                  });
+                  } else {
+                    _showSetSystemIDDialog();
+                  }
                 },
                 child: Image(
                   height: 135.h,
@@ -84,6 +110,36 @@ class _MainSwitchState extends State<MainSwitch> {
           ],
         ),
       ],
+    );
+  }
+
+  void _showSetSystemIDDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            "Set SystemID",
+            style: TextStyle(
+              color: Color.fromARGB(255, 71, 12, 82),
+            ),
+          ),
+          content: const Text(
+            "Please set systemID to switch on the main switch.",
+            style: TextStyle(
+              color: Color.fromARGB(255, 71, 12, 82),
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
