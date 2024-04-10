@@ -47,6 +47,8 @@ dependencies:
   cloud_firestore: ^4.15.10
   flutter_local_notifications: ^17.0.0
   kdgaugeview: ^1.0.5
+  image_picker: ^1.0.7
+  firebase_storage: ^11.7.1
   
 
 dev_dependencies:
