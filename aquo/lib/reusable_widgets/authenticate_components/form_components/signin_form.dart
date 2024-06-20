@@ -2,11 +2,14 @@ import 'package:aquo/global.dart';
 import 'package:aquo/reusable_widgets/authenticate_components/form_components/text_field.dart';
 import 'package:aquo/screens/default_home.dart';
 import 'package:aquo/screens/forgot_password.dart';
+import 'package:aquo/screens/home.dart';
+import 'package:aquo/screens/otp.dart';
 import 'package:aquo/screens/signup.dart';
 import 'package:aquo/services/authenticate.dart';
 import 'package:aquo/services/db.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SiginForm extends StatefulWidget {
@@ -66,26 +69,26 @@ class _SiginFormState extends State<SiginForm> {
             Row(
               //mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Checkbox(
-                //   value: isChecked,
-                //   onChanged: (bool? newValue) {
-                //     setState(() {
-                //       isChecked = newValue;
-                //     });
-                //   },
-                // ),
-                // Container(
-                //   //margin: EdgeInsets.only(right: (width * 0.2)),
-                //   child: Text(
-                //     'Remember Password',
-                //     style: TextStyle(
-                //       fontFamily: 'Roboto',
-                //       fontSize: 12.sp,
-                //       fontWeight: FontWeight.normal,
-                //       color: const Color(0xFFBDC1BB),
-                //     ),
-                //   ),
-                // ),
+                Checkbox(
+                  value: isChecked,
+                  onChanged: (bool? newValue) {
+                    setState(() {
+                      isChecked = newValue;
+                    });
+                  },
+                ),
+                Container(
+                  //margin: EdgeInsets.only(right: (width * 0.2)),
+                  child: Text(
+                    'Remember Password',
+                    style: TextStyle(
+                      fontFamily: 'Roboto',
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.normal,
+                      color: const Color(0xFFBDC1BB),
+                    ),
+                  ),
+                ),
                 GestureDetector(
                   onTap: () {
                     Navigator.push(
@@ -96,7 +99,7 @@ class _SiginFormState extends State<SiginForm> {
                     );
                   },
                   child: Container(
-                    margin: EdgeInsets.only(left: (150.5.w)),
+                    margin: EdgeInsets.only(left: (7.5.w)),
                     child: Text(
                       'Forgot Password?',
                       style: TextStyle(
@@ -111,7 +114,7 @@ class _SiginFormState extends State<SiginForm> {
               ],
             ),
             SizedBox(
-              height: 15.h,
+              height: 1.624.h,
             ),
             SizedBox(
               width: 131.w,
@@ -190,7 +193,7 @@ class _SiginFormState extends State<SiginForm> {
                   ),
                   GestureDetector(
                     onTap: () async {
-                      UserCredential? user = await _auth.signInWithFacebook();
+                      UserCredential? user = await signInWithFacebook();
                       if (user != null) {
                         isFacebookUser = true;
                         Navigator.pushReplacement(
@@ -277,5 +280,25 @@ class _SiginFormState extends State<SiginForm> {
     FocusScope.of(context).unfocus();
   }
 
-  
+  Future<UserCredential> signInWithFacebook() async {
+    final LoginResult result =
+        await FacebookAuth.instance.login(permissions: ['email']);
+
+    if (result.status == LoginStatus.success) {
+      final userData = await FacebookAuth.instance.getUserData();
+
+      _userData = userData;
+    } else {
+      print(result.message);
+    }
+
+    setState(() {
+      //welcome = _userData?['email'];
+    });
+
+    final OAuthCredential facebookAuthCredential =
+        FacebookAuthProvider.credential(result.accessToken!.token);
+
+    return FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
+  }
 }

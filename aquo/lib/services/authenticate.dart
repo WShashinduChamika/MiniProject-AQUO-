@@ -93,17 +93,17 @@ class AuthServices {
       DocumentSnapshot documentSnapshot = await _db.getUser(emailUID);
       String contactNumber = documentSnapshot['ContactNumber'];
       // ignore: use_build_context_synchronously
-      Navigator.pushReplacement(
+      Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => OTPVerification(
-              // isSignup: false,
-              // firstName: "",
-              // lastName: "",
-              // email: email,
-              // password: password,
-              // confirmPassword: "",
-              // phoneNumber: contactNumber,
+              isSignup: false,
+              firstName: "",
+              lastName: "",
+              email: email,
+              password: password,
+              confirmPassword: "",
+              phoneNumber: contactNumber,
               ),
         ),
       );

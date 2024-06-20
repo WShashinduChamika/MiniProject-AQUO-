@@ -1,12 +1,9 @@
 import 'package:aquo/reusable_widgets/authenticate_components/form_components/text_field.dart';
-import 'package:aquo/screens/home.dart';
 import 'package:aquo/screens/otp.dart';
 import 'package:aquo/screens/signin.dart';
 import 'package:aquo/services/authenticate.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SignupForm extends StatefulWidget {
@@ -240,13 +237,13 @@ class _SignupFormState extends State<SignupForm> {
       context,
       MaterialPageRoute(
         builder: (context) => OTPVerification(
-          // isSignup: true,
-          // firstName: firstName,
-          // lastName: lastName,
-          // email: email,
-          // password: password,
-          // confirmPassword: confirmPassword,
-          // phoneNumber: phoneNumber,
+          isSignup: true,
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          password: password,
+          confirmPassword: confirmPassword,
+          phoneNumber: phoneNumber,
         ),
       ),
     );
@@ -319,4 +316,3 @@ class _SignupFormState extends State<SignupForm> {
   //   }
   // }
 }
-

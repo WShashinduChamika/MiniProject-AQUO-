@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-
 class UserInputField extends StatefulWidget {
   final TextEditingController controller;
   final bool isPasswordType;
