@@ -2,6 +2,7 @@ import 'package:aquo/reusable_widgets/home_components/menubar_component.dart';
 import 'package:aquo/screens/future_implement.dart';
 import 'package:aquo/screens/map.dart';
 import 'package:aquo/screens/notiscreen.dart';
+import 'package:aquo/screens/user.dart';
 import 'package:aquo/services/authenticate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -87,7 +88,12 @@ class _NavBarState extends State<NavBar> {
                 },
                 top: 185.h,
                 buttonBehaviour: () {
-                  
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const UserProfile(),
+                    ),
+                  );
                 },
                 img: 'images/home/user.png'),
             MenuBarComponent(

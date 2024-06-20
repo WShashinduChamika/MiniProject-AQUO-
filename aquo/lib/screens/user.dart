@@ -4,6 +4,7 @@
 // import 'package:aquo/signin.dart';
 import 'package:aquo/global.dart';
 import 'package:aquo/reusable_widgets/user_components/navigations.dart';
+import 'package:aquo/screens/edit_user_profile.dart';
 import 'package:aquo/screens/home.dart';
 import 'package:aquo/screens/map.dart';
 import 'package:aquo/services/authenticate.dart';
@@ -99,11 +100,23 @@ class _UserProfileState extends State<UserProfile> {
                         children: [
                           Container(
                               // ignore: unnecessary_null_comparison
-                              child: !userDp.isNotEmpty
-                                  ? CircleAvatar(
-                                      radius: 50.r,
-                                      backgroundImage:
-                                          AssetImage('images/user/user.png'),
+                              child: userDp.isEmpty
+                                  ? Container(
+                                      alignment: Alignment.center,
+                                      height: 100.h,
+                                      width: 100.w,
+                                      decoration: const BoxDecoration(
+                                        color: Color(0xFFFFFFFF),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: firstName.isNotEmpty? Text(
+                                        firstName![0],
+                                        style: TextStyle(
+                                          fontSize: 50.sp,
+                                          fontWeight: FontWeight.w500,
+                                          color:Color(0xFF5483EF),
+                                        ),
+                                      ):Text(''),
                                     )
                                   : CircleAvatar(
                                       radius: 50.r,
@@ -116,8 +129,9 @@ class _UserProfileState extends State<UserProfile> {
                           //   ),
                           // ),
                           Container(
+                            alignment: Alignment.center,
                             width: 200.w,
-                            margin: EdgeInsets.only(top: 13.h,left: 20.w),
+                            margin: EdgeInsets.only(top: 13.h),
                             child: Text(
                               '$firstName $lastName',
                               style: TextStyle(
@@ -129,6 +143,7 @@ class _UserProfileState extends State<UserProfile> {
                             ),
                           ),
                           Container(
+                            alignment: Alignment.center,
                             child: Text(
                               '$email',
                               style: TextStyle(
@@ -264,7 +279,12 @@ class _UserProfileState extends State<UserProfile> {
                       type: 'Edit Profile',
                       img3: 'images/user/user_back.png',
                       onTap: () {
-                       
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const EditProfile(),
+                          ),
+                        );
                       },
                     ),
                     NavigatorComponent(
@@ -283,8 +303,7 @@ class _UserProfileState extends State<UserProfile> {
                       img1: 'images/user/support.png',
                       type: 'Support',
                       img3: 'images/user/user_back.png',
-                      onTap: () {
-                      },
+                      onTap: () {},
                     ),
                     NavigatorComponent(
                       img1: 'images/user/location.png',
@@ -335,21 +354,21 @@ class _UserProfileState extends State<UserProfile> {
     }
   }
 
-  // void getUserDP(String uid) async {
-  //   DocumentSnapshot documentSnapshot = await _db.getUserDP(uid);
-  //   if (documentSnapshot.exists) {
-  //     setState(() {
-  //       userDp = documentSnapshot?['profile-img'].trim();
-  //     });
-  //     print("user dp" + userDp);
-  //   }
-  // }
+  void getUserDP(String uid) async {
+    DocumentSnapshot documentSnapshot = await _db.getUserDP(uid);
+    if (documentSnapshot.exists) {
+      setState(() {
+        userDp = documentSnapshot?['Profile-img'].trim();
+      });
+      print("user dp" + userDp);
+    }
+  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    //getUserDP("23");
-    setUserDetails(isGmailUser? _auth.currentUser!.uid: emailUID);
+    getUserDP(isGmailUser ? _auth.currentUser!.uid : emailUID);
+    setUserDetails(isGmailUser ? _auth.currentUser!.uid : emailUID);
   }
 }
