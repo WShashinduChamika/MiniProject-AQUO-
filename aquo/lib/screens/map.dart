@@ -62,11 +62,12 @@ class _CurrentLocationMapState extends State<CurrentLocationMap> {
             User? user = FirebaseAuth.instance.currentUser;
             isLocationSet = true;
             String uid = isGmailUser ? user!.uid : emailUID;
-            _db.setLocation(
+            await _db.setLocation(
               uid,
               position.longitude.toString(),
               position.latitude.toString(),
             );
+            _showSetLocationDialog();
           } catch (e) {
             // Handle error
             print(e.toString());
@@ -128,6 +129,44 @@ class _CurrentLocationMapState extends State<CurrentLocationMap> {
               },
             ),
           ],
+        );
+      },
+    );
+  }
+
+  void _showSetLocationDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // Schedule a function to close the dialog after 2 seconds
+        Future.delayed(Duration(seconds: 4), () {
+          if (Navigator.of(context).canPop()) {
+            Navigator.of(context).pop();
+          }
+        });
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          alignment: Alignment.center,
+          backgroundColor: Colors.white,
+          icon: Icon(
+            Icons.done,
+            size: 50.0,
+            //weight: 100,
+            color: Colors.green.shade500,
+          ),
+          iconPadding: EdgeInsets.only(top: 10),
+          title: Text(
+            "Success !!",
+            style: TextStyle(
+              color: Colors.black,
+            ),
+          ),
+          content: const Text(
+            "Location is successfully set up.",
+            textAlign: TextAlign.center,
+          ),
         );
       },
     );
