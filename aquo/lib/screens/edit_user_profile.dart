@@ -76,12 +76,13 @@ class _EditProfileState extends State<EditProfile> {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const UserProfile(),
-                              ),
-                            );
+                            // Navigator.pushReplacement(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //     builder: (context) => const UserProfile(),
+                            //   ),
+                            // );
+                            Navigator.pop(context);
                           },
                           child: Container(
                             margin: EdgeInsets.only(left: 30.w),
@@ -108,8 +109,9 @@ class _EditProfileState extends State<EditProfile> {
                             //saveData(_image!);
                             print("update");
                             //print(emailUID);
-                            setInputValue(
-                                isGmailUser ? _auth.currentUser!.uid : emailUID);
+                            setInputValue(isGmailUser
+                                ? _auth.currentUser!.uid
+                                : emailUID);
                           },
                           child: Container(
                             margin: EdgeInsets.only(left: 68.w),
@@ -135,9 +137,24 @@ class _EditProfileState extends State<EditProfile> {
                             backgroundImage: MemoryImage(_image!),
                           )
                         : imageUrl.isEmpty
-                            ? CircleAvatar(
-                                radius: 60.r,
-                                backgroundImage: AssetImage('images/user/user.png'),
+                            ? Container(
+                                alignment: Alignment.center,
+                                height: 100.h,
+                                width: 100.w,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFFFFFFFF),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: firstName.isNotEmpty
+                                    ? Text(
+                                        firstName![0],
+                                        style: TextStyle(
+                                          fontSize: 50.sp,
+                                          fontWeight: FontWeight.w500,
+                                          color: Color(0xFF5483EF),
+                                        ),
+                                      )
+                                    : Text(''),
                               )
                             : CircleAvatar(
                                 radius: 60.r,
@@ -156,7 +173,7 @@ class _EditProfileState extends State<EditProfile> {
                         setState(() {
                           if (img != null) {
                             _image = img;
-                            //print(img);
+                            print(img);
                           }
                         });
                       },
@@ -191,8 +208,8 @@ class _EditProfileState extends State<EditProfile> {
                               _emailController, email),
                           setUserData("ContactNumber", TextInputType.phone,
                               _contactNumber, contactNumber),
-                          setUserData(
-                              "SystemID", TextInputType.name, _systemID, SystemID),
+                          setUserData("SystemID", TextInputType.name, _systemID,
+                              SystemID),
                         ],
                       ),
                     ),
@@ -229,7 +246,7 @@ class _EditProfileState extends State<EditProfile> {
     UploadTask uploadTask = ref.putFile(file);
     TaskSnapshot taskSnapshot = await uploadTask;
     String downloadURL = await taskSnapshot.ref.getDownloadURL();
-    //print(downloadURL);
+    print(downloadURL);
     return downloadURL;
   }
 
@@ -249,7 +266,7 @@ class _EditProfileState extends State<EditProfile> {
       TextEditingController controller, String hintText) {
     return Container(
       margin: EdgeInsets.only(top: 30.h),
-      height: 52.h,
+      height: 55.h,
       width: 286.45.w,
       decoration: BoxDecoration(
         // color: Colors.amber,
@@ -379,7 +396,7 @@ class _EditProfileState extends State<EditProfile> {
       SystemID,
     );
     if (_image != null) {
-      saveData(_image!, uid);
+      await saveData(_image!, uid);
     }
     Navigator.pushReplacement(
       context,
