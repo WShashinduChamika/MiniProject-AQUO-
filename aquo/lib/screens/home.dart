@@ -18,14 +18,25 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+// Custom class to hold both T2 and SetNotificationStatus
+class DocumentData {
+  final String t2;
+  final String notificationStatus;
+
+  DocumentData(this.t2, this.notificationStatus);
+}
+
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final String id;
+  const HomeScreen({this.id = "", super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  String? previousT2;
+
   bool isMenuBarClicked = false; //varibale to check menubar status
 
   //variables to check the appear status of weather tool
@@ -54,23 +65,55 @@ class _HomeScreenState extends State<HomeScreen> {
   final DatabaseServices _db = DatabaseServices();
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  //variable to check notification status
-  String humidity = '';
-  bool isHumiditySet = false;
-  bool isRecivedNotificatiion = false;
+  //variable to gain already set up systemID
+  String? setUpSystemID;
+
+  late Stream<DocumentSnapshot> documentStream;
+  
+  
+  @override
+  void initState() {
+    super.initState();
+    getUserSystemID(isGmailUser ? _auth.currentUser!.uid : emailUID);
+    setWeatherDetails();
+    documentStream = widget.id.isNotEmpty
+        ? FirebaseFirestore.instance
+            .collection('EspData')
+            .doc(widget.id)
+            .snapshots()
+        : FirebaseFirestore.instance
+            .collection('EspData')
+            .doc(systemID)
+            .snapshots();
+  }
+
+  // Stream transformer function to extract both T2 and SetNotificationStatus
+  Stream<DocumentData> t2Stream(Stream<DocumentSnapshot> stream) {
+    return stream.map((snapshot) {
+      if (snapshot.exists) {
+        final data = snapshot.data()
+            as Map<String, dynamic>?; // Explicitly cast to a Map
+        if (data != null) {
+          final t2 =
+              data.containsKey("Moisture") ? data["Moisture"].toString() : "10";
+          final notificationStatus = data.containsKey("SetNotificationStatus")
+              ? data["SetNotificationStatus"].toString()
+              : "0";
+          return DocumentData(t2, notificationStatus);
+        }
+      }
+      return DocumentData("0", "0");
+    }).distinct((prev, next) =>
+        prev.t2 == next.t2 &&
+        prev.notificationStatus == next.notificationStatus);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: StreamBuilder(
-        stream:systemID.isNotEmpty?FirebaseFirestore.instance
-            .collection('EspData')
-            .doc(systemID)
-            .snapshots():FirebaseFirestore.instance
-            .collection('EspData')
-            .doc("DHT")
-            .snapshots(),
-        builder: (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+      body: StreamBuilder<DocumentData>(
+        stream: t2Stream(documentStream),
+        builder: (context, snapshot) {
           // if (snapshot.connectionState == ConnectionState.waiting) {
           //   return Center(child: CircularProgressIndicator());
           // }
@@ -79,51 +122,14 @@ class _HomeScreenState extends State<HomeScreen> {
             return Center(child: Text('Error: ${snapshot.error}'));
           }
 
-          if (!snapshot.hasData || !snapshot.data!.exists) {
+          if (!snapshot.hasData) {
             // Handle the case where the document doesn't exist
             return const DefaultHomeScreen();
           }
 
-          var humidity = snapshot.data!.get('Temperature') ?? "0";
-            var isHumiditySet = false;
-            print("Temprature"+humidity);
-            print("System"+systemID);
-            isRecivedNotificatiion =
-                snapshot.data!.get('SetNotificationStatus') ?? "0";
-           if (humidity == '28.00') {
-                isHumiditySet = true;
-                print(humidity);
-              } else {
-                isHumiditySet = false;
-                if(systemID.isNotEmpty){
-                  //print(systemID);
-                  _db.ESPCollection
-                   .doc(systemID)
-                   .update({"SetNotificationStatus": false});
-                }
-              }
-              String notificationTitle = "Humidity Notification";
-              String notificationMessage = "Please on the watering switch";
-              DateTime currentDateTime = DateTime.now();
-              String receviedDateTime = currentDateTime.toString();
-              // if (isHumiditySet && !isRecivedNotificatiion) {
-
-              // }
-
-              if (isHumiditySet && !isRecivedNotificatiion) {
-                LocalNotification().showSimpleNotification(
-                    title: notificationTitle,
-                    body: notificationMessage,
-                    payload: "This is simple data");
-                _db.setNotification(receviedDateTime, _auth.currentUser!.uid,
-                    notificationTitle, notificationMessage, receviedDateTime);
-                if(systemID.isNotEmpty){
-                   print("notification come");
-                   _db.ESPCollection
-                    .doc(systemID)
-                    .update({"SetNotificationStatus": true});
-                }
-              } else {}
+          var t2 = snapshot.data!.t2;
+          var noti = snapshot.data!.notificationStatus;
+          handleNotifications(t2, noti);
 
           return SafeArea(
             child: Stack(
@@ -160,6 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   },
                                   isClicked: isMenuBarClicked),
                             ),
+
                             SizedBox(
                               height: 11.h,
                             ),
@@ -460,10 +467,50 @@ class _HomeScreenState extends State<HomeScreen> {
     print(sunLightLevel);
   }
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    setWeatherDetails();
+  Future<void> sendNotifications() async {
+    //print("send notifications");
+    String notificationTitle = "Humidity Notification";
+    String notificationMessage = "Please on the watering switch";
+    DateTime currentDateTime = DateTime.now();
+    String receviedDateTime = currentDateTime.toString();
+    await _db.setNotification(receviedDateTime, _auth.currentUser!.uid,
+        notificationTitle, notificationMessage, receviedDateTime);
+  }
+
+  Future<void> getUserSystemID(String uid) async {
+    String id = await _db.getUserSystemID(uid);
+    if (id.isNotEmpty) {
+      systemID = id;
+    }
+  }
+
+  void handleNotifications(String t2, String noti) {
+    double doubleValue = double.parse(t2);
+    int newt2 = doubleValue.toInt();
+    if (newt2 >= 20) {
+      if (noti == "false") {
+        if (systemID.isNotEmpty) {
+          _db.ESPCollection.doc(systemID)
+              .update({"SetNotificationStatus": true});
+          LocalNotification().showSimpleNotification(
+              title: "Soil Moisture Alert",
+              body: "Please turn on the watering switch",
+              payload: "This is simple data");
+          String notificationTitle = "Soli Moistue Alert";
+          String notificationMessage = "Please on the watering switch";
+          DateTime currentDateTime = DateTime.now();
+          String receviedDateTime = currentDateTime.toString();
+          _db.setNotification(receviedDateTime, _auth.currentUser!.uid,
+              notificationTitle, notificationMessage, receviedDateTime);
+        }
+      }
+    } else {
+      if (noti == "true") {
+        if (systemID.isNotEmpty) {
+          _db.ESPCollection.doc(systemID)
+              .update({"SetNotificationStatus": false});
+        }
+      }
+    }
   }
 }

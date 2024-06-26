@@ -112,6 +112,7 @@ class _EditProfileState extends State<EditProfile> {
                             setInputValue(isGmailUser
                                 ? _auth.currentUser!.uid
                                 : emailUID);
+                            
                           },
                           child: Container(
                             margin: EdgeInsets.only(left: 68.w),
@@ -223,44 +224,6 @@ class _EditProfileState extends State<EditProfile> {
     );
   }
 
-  pickImage(ImageSource source) async {
-    final ImagePicker _imagePicker = ImagePicker();
-    XFile? _file = await _imagePicker.pickImage(source: source);
-
-    if (_file != null) {
-      return await _file.readAsBytes();
-    }
-  }
-
-  Future<String> uploadImageToStorage(
-      String childName, Uint8List fileData) async {
-    Reference ref = _storage.ref(childName);
-
-    // Convert Uint8List to File
-    Directory tempDir = await getTemporaryDirectory();
-    String tempPath = tempDir.path;
-    String filePath = '$tempPath/$childName';
-    File file = File(filePath);
-    await file.writeAsBytes(fileData);
-
-    UploadTask uploadTask = ref.putFile(file);
-    TaskSnapshot taskSnapshot = await uploadTask;
-    String downloadURL = await taskSnapshot.ref.getDownloadURL();
-    print(downloadURL);
-    return downloadURL;
-  }
-
-  Future saveData(Uint8List file, String uid) async {
-    try {
-      String url = await uploadImageToStorage("User Profile", file);
-      print(url);
-      await userCollection.doc(uid).update({
-        "Profile-img": url,
-      }).then((value) => print("Success"));
-    } catch (e) {
-      print(e.toString());
-    }
-  }
 
   Widget setUserData(String Title, TextInputType inputType,
       TextEditingController controller, String hintText) {
@@ -337,6 +300,45 @@ class _EditProfileState extends State<EditProfile> {
       ),
     );
   }
+  
+  pickImage(ImageSource source) async {
+    final ImagePicker _imagePicker = ImagePicker();
+    XFile? _file = await _imagePicker.pickImage(source: source);
+
+    if (_file != null) {
+      return await _file.readAsBytes();
+    }
+  }
+
+  Future<String> uploadImageToStorage(
+      String childName, Uint8List fileData) async {
+    Reference ref = _storage.ref(childName);
+
+    // Convert Uint8List to File
+    Directory tempDir = await getTemporaryDirectory();
+    String tempPath = tempDir.path;
+    String filePath = '$tempPath/$childName';
+    File file = File(filePath);
+    await file.writeAsBytes(fileData);
+
+    UploadTask uploadTask = ref.putFile(file);
+    TaskSnapshot taskSnapshot = await uploadTask;
+    String downloadURL = await taskSnapshot.ref.getDownloadURL();
+    print(downloadURL);
+    return downloadURL;
+  }
+
+  Future saveData(Uint8List file, String uid) async {
+    try {
+      String url = await uploadImageToStorage("User Profile", file);
+      print(url);
+      await userCollection.doc(uid).update({
+        "Profile-img": url,
+      }).then((value) => print("Success"));
+    } catch (e) {
+      print(e.toString());
+    }
+  }
 
   Future getUserData(String uid) async {
     try {
@@ -403,6 +405,44 @@ class _EditProfileState extends State<EditProfile> {
       MaterialPageRoute(
         builder: (context) => const UserProfile(),
       ),
+    );
+  }
+
+   void _showUpdateProfileDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // Schedule a function to close the dialog after 2 seconds
+        Future.delayed(Duration(seconds: 4), () {
+          if (Navigator.of(context).canPop()) {
+            Navigator.of(context).pop();
+          }
+        });
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          alignment: Alignment.center,
+          backgroundColor: Colors.white,
+          icon: Icon(
+            Icons.done,
+            size: 50.0,
+            //weight: 100,
+            color: Colors.green.shade500,
+          ),
+          iconPadding: EdgeInsets.only(top: 10),
+          title: Text(
+            "Success !!",
+            style: TextStyle(
+              color: Colors.black,
+            ),
+          ),
+          content: const Text(
+            "Profile is successfully updated.",
+            textAlign: TextAlign.center,
+          ),
+        );
+      },
     );
   }
 }

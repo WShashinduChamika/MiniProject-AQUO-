@@ -74,7 +74,17 @@ class DatabaseServices {
       print("error $e");
     }
   }
-
+  
+  Future getUserSystemID(uid) async{
+    try{
+      DocumentSnapshot documentSnapshot = await userCollection.doc(uid).get();
+      if(documentSnapshot.exists){
+        return documentSnapshot["SystemID"];
+      }
+    }catch(e){
+      print("systemID error $e");
+    }
+  }
   //set location details
   Future setLocation(uid, String longitude, String latitude) async {
     try {
@@ -125,6 +135,18 @@ class DatabaseServices {
         "Received Date Time": receviedDateTime
       });
       return true;
-    } catch (e) {}
+    } catch (e) {
+       print("Notification error : $e");
+    }
+  }
+
+  Future deleteNotification(docId)async{
+      try{
+         await notificationCollection.doc(docId).delete();
+         return true;
+      }catch(e){
+        print("Notification error : $e");
+        return false;
+      }
   }
 }

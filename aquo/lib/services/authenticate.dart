@@ -30,10 +30,11 @@ class AuthServices {
           password: password,
         );
         final user = await _auth.currentUser;
-        _db.setUser(user!.uid, firstName, lastName, email, contactNumber);
+        await _db.setUser(user!.uid, firstName, lastName, email, contactNumber);
         // You can navigate to the next screen or perform other actions on success
         // ignore: use_build_context_synchronously
         emailUID = user!.uid;
+        String sysID = await _db.getUserSystemID(user!.uid);
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -97,14 +98,14 @@ class AuthServices {
         context,
         MaterialPageRoute(
           builder: (context) => OTPVerification(
-              isSignup: false,
-              firstName: "",
-              lastName: "",
-              email: email,
-              password: password,
-              confirmPassword: "",
-              phoneNumber: contactNumber,
-              ),
+            isSignup: false,
+            firstName: "",
+            lastName: "",
+            email: email,
+            password: password,
+            confirmPassword: "",
+            phoneNumber: contactNumber,
+          ),
         ),
       );
       //return userCredential;
@@ -128,6 +129,7 @@ class AuthServices {
   }
 
   Future<UserCredential> signInWithGoogle(BuildContext context) async {
+
     // Trigger the authentication flow
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
@@ -141,13 +143,19 @@ class AuthServices {
       idToken: googleAuth?.idToken,
     );
 
-    // Once signed in, return the UserCredential
+    // Once signed in, obtain sysID
     UserCredential userCredential =
         await _auth.signInWithCredential(credential);
+
+    String sysID = await _db.getUserSystemID(userCredential.user!.uid);
+    print("sysid $sysID");
+    // Navigate to HomeScreen after obtaining sysID
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const HomeScreen()),
+      MaterialPageRoute(builder: (context) => HomeScreen(id: sysID)),
     );
+
+    // Set flag indicating Google user
     isGmailUser = true;
 
     return userCredential;
