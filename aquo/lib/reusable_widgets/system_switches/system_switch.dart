@@ -24,6 +24,8 @@ class SystemSwitch extends StatefulWidget {
 class _SystemSwitchState extends State<SystemSwitch> {
   final DatabaseServices _db = DatabaseServices();
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  String? sysID;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -152,5 +154,12 @@ class _SystemSwitchState extends State<SystemSwitch> {
         ],
       ),
     );
+  }
+
+  Future<void> getUserSystemID(String uid) async {
+    String id = await _db.getUserSystemID(uid);
+    if (id.isNotEmpty) {
+       sysID = id;
+    }
   }
 }

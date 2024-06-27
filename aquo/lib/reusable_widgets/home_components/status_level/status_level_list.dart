@@ -2,6 +2,8 @@ import 'package:aquo/global.dart';
 import 'package:aquo/reusable_widgets/home_components/status_level/status_level.dart';
 import 'package:aquo/screens/future_implement.dart';
 import 'package:aquo/screens/soil_moisture.dart';
+import 'package:aquo/services/db.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -13,6 +15,19 @@ class StatusLevelList extends StatefulWidget {
 }
 
 class _StatusLevelListState extends State<StatusLevelList> {
+  DatabaseServices _db = DatabaseServices();
+  FirebaseAuth _auth = FirebaseAuth.instance;
+
+  String sysID = "";
+
+  @override
+  void initState() {
+    super.initState();
+    getUserSystemID(isGmailUser ? _auth.currentUser!.uid : emailUID);
+    _db = DatabaseServices();
+    _auth = FirebaseAuth.instance;
+  }
+
   @override
   Widget build(BuildContext context) {
     return //begining of the bottom part
@@ -45,7 +60,7 @@ class _StatusLevelListState extends State<StatusLevelList> {
               txt3: 'Moisture',
               arrowBgClr: const Color(0xFFBA58E6),
               navigateT0: () {
-                if (systemID.isNotEmpty) {
+                if (sysID.isNotEmpty && sysID!="DHT") {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -148,5 +163,12 @@ class _StatusLevelListState extends State<StatusLevelList> {
         );
       },
     );
+  }
+
+  Future<void> getUserSystemID(String uid) async {
+    String id = await _db.getUserSystemID(uid);
+    if (id.isNotEmpty) {
+        sysID = id;
+    }
   }
 }

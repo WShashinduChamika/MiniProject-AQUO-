@@ -25,12 +25,14 @@ class MainSwitch extends StatefulWidget {
 }
 
 class _MainSwitchState extends State<MainSwitch> {
-   late DatabaseServices _db;
-  late FirebaseAuth _auth;
+  DatabaseServices _db = DatabaseServices();
+  FirebaseAuth _auth = FirebaseAuth.instance;
+  String sysID = "";
 
   @override
   void initState() {
     super.initState();
+    getUserSystemID(isGmailUser? _auth.currentUser!.uid:emailUID);
     _db = DatabaseServices();
     _auth = FirebaseAuth.instance;
   }
@@ -74,8 +76,8 @@ class _MainSwitchState extends State<MainSwitch> {
             Container(
               child: GestureDetector(
                 onTap: () {
-                  String uid = systemID;
-                  if (systemID.isNotEmpty) {
+                  String uid = sysID;
+                  if (sysID.isNotEmpty && sysID!="DHT") {
                     setState(() {
                       bool updateValue = !widget.isMainSwitchOn;
                       widget.isMainSwitchOnValue(updateValue);
@@ -86,7 +88,7 @@ class _MainSwitchState extends State<MainSwitch> {
                       }
                     });
                   }
-                  if (systemID.isNotEmpty) {
+                  if (sysID.isNotEmpty && sysID!="DHT") {
                     if (!widget.isMainSwitchOn) {
                       //_db.setSwitchStatus(uid, true, false, false);
                        _db.setSwitchStatus(uid, "on", "off", "off");
@@ -141,5 +143,12 @@ class _MainSwitchState extends State<MainSwitch> {
         );
       },
     );
+  }
+
+  Future<void> getUserSystemID(String uid) async {
+    String id = await _db.getUserSystemID(uid);
+    if (id.isNotEmpty) {
+      sysID = id;
+    }
   }
 }

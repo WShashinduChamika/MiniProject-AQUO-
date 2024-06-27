@@ -119,6 +119,10 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     try {
       await FirebaseAuth.instance
           .sendPasswordResetEmail(email: _emailController.text.trim());
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const SigninScreen()),
+      );
     } on FirebaseException catch (e) {
       print(e.toString());
       _showForgotPasswordErrorDialog(e.toString());
@@ -138,6 +142,38 @@ class _ForgotPasswordState extends State<ForgotPassword> {
           ),
           content: Text(
             '$error',
+            style: const TextStyle(
+              color: Color.fromARGB(255, 71, 12, 82),
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text(
+                "OK",
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showForgotPasswordSuccessDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            "Success!!",
+            style: TextStyle(
+              color: Color.fromARGB(255, 71, 12, 82),
+            ),
+          ),
+          content: Text(
+            'Password is successfully reseted',
             style: const TextStyle(
               color: Color.fromARGB(255, 71, 12, 82),
             ),

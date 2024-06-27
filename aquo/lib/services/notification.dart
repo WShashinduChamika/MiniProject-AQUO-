@@ -1,8 +1,17 @@
 //import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:aquo/screens/notiscreen.dart';
+import 'package:aquo/services/authenticate.dart';
+import 'package:aquo/services/db.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class LocalNotification {
+
+  DatabaseServices _db = DatabaseServices();
+  FirebaseAuth _auth = FirebaseAuth.instance;
+
   static final FlutterLocalNotificationsPlugin
       _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 

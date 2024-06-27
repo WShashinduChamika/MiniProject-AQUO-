@@ -31,7 +31,7 @@ class _SoilMoistureLevelState extends State<SoilMoistureLevel> {
     return SafeArea(
       child: Scaffold(
         body: StreamBuilder(
-          stream: systemUID.isNotEmpty
+          stream: systemID.isNotEmpty
               ? FirebaseFirestore.instance
                   .collection("EspData")
                   .doc(systemID)

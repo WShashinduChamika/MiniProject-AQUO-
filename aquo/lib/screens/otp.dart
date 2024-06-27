@@ -1,3 +1,4 @@
+import 'package:aquo/global.dart';
 import 'package:aquo/screens/home.dart';
 import 'package:aquo/screens/signin.dart';
 import 'package:aquo/services/authenticate.dart';
@@ -21,15 +22,17 @@ class OTPVerification extends StatefulWidget {
   final String password;
   final String confirmPassword;
   final String phoneNumber;
-  const OTPVerification(
-      {super.key,
-      required this.isSignup,
-      required this.firstName,
-      required this.lastName,
-      required this.email,
-      required this.password,
-      required this.confirmPassword,
-      required this.phoneNumber});
+
+  const OTPVerification({
+    super.key,
+    required this.isSignup,
+    required this.firstName,
+    required this.lastName,
+    required this.email,
+    required this.password,
+    required this.confirmPassword,
+    required this.phoneNumber,
+  });
 
   @override
   State<OTPVerification> createState() => _OTPVerificationState();
@@ -38,13 +41,13 @@ class OTPVerification extends StatefulWidget {
 class _OTPVerificationState extends State<OTPVerification> {
   TextEditingController _phoneNumber = TextEditingController();
   TextEditingController _otpCode = TextEditingController();
-  String receviedOTP = '';
-  //String phoneNumber = '';
+  String receivedOTP = '';
   FirebaseAuth _auth = FirebaseAuth.instance;
   final AuthServices _auth2 = AuthServices();
   String verificationReceivedId = '';
   bool isOTPVisible = false;
   DatabaseServices _db = DatabaseServices();
+  String id = "";
 
   final defaultPinTheme = PinTheme(
     width: 40.w,
@@ -59,6 +62,14 @@ class _OTPVerificationState extends State<OTPVerification> {
       border: Border.all(color: Colors.transparent),
     ),
   );
+
+  @override
+  void initState() {
+    super.initState();
+    if(emailUID.isNotEmpty){
+        getUserSystemID(emailUID);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,12 +91,11 @@ class _OTPVerificationState extends State<OTPVerification> {
                   height: 20.h,
                   width: 10.w,
                   margin: EdgeInsets.only(top: 32.h, left: 30.w),
-                  //color:Colors.amber,
                   child: Image(
-                      image:
-                          const AssetImage("images/otp_screen/left_arrow.png"),
-                      height: 20.h,
-                      width: 10.w),
+                    image: const AssetImage("images/otp_screen/left_arrow.png"),
+                    height: 20.h,
+                    width: 10.w,
+                  ),
                 ),
               ),
               Container(
@@ -101,9 +111,7 @@ class _OTPVerificationState extends State<OTPVerification> {
               Container(
                 height: 27.h,
                 width: 200.w,
-                margin: EdgeInsets.only(
-                  left: 32.w,
-                ),
+                margin: EdgeInsets.only(left: 32.w),
                 child: Row(
                   children: [
                     Container(
@@ -182,12 +190,13 @@ class _OTPVerificationState extends State<OTPVerification> {
                   defaultPinTheme: defaultPinTheme,
                   focusedPinTheme: defaultPinTheme.copyWith(
                     decoration: defaultPinTheme.decoration!.copyWith(
-                        border: Border.all(color: Colors.blue.shade100)),
+                      border: Border.all(color: Colors.blue.shade100),
+                    ),
                   ),
                   onCompleted: (value) {
                     debugPrint(value);
                     setState(() {
-                      receviedOTP = value;
+                      receivedOTP = value;
                     });
                   },
                 ),
@@ -195,10 +204,7 @@ class _OTPVerificationState extends State<OTPVerification> {
               Container(
                 height: 50.h,
                 width: 315.w,
-                margin: EdgeInsets.only(
-                  top: 70.h,
-                  left: 32.w,
-                ),
+                margin: EdgeInsets.only(top: 70.h, left: 32.w),
                 child: ElevatedButton(
                   onPressed: () {
                     !isOTPVisible ? verifyNumber() : verifyCode();
@@ -225,54 +231,54 @@ class _OTPVerificationState extends State<OTPVerification> {
     );
   }
 
-  // @override
-  // void initState() async {
-  //   super.initState();
-  //   final user = await _auth.currentUser;
-  //   DocumentSnapshot documentSnapshot = await _db.getUser(user!.uid);
-  //   phoneNumber = documentSnapshot['phoneNumber'];
-  // }
-
   void verifyNumber() {
     _auth.verifyPhoneNumber(
-        phoneNumber: '+94${widget.phoneNumber.substring(1)}',
-        verificationCompleted: (PhoneAuthCredential credential) async {
-          await _auth.signInWithCredential(credential).then((value) {
-            print("Login suucessfully");
-          });
-        },
-        verificationFailed: (FirebaseAuthException exception) {
-          print('err $exception.message');
-        },
-        codeSent: (String verificationId, int? resendCode) {
-          verificationReceivedId = verificationId;
-          isOTPVisible = true;
-          setState(() {});
-        },
-        codeAutoRetrievalTimeout: (String verificationId) {});
+      phoneNumber: '+94${widget.phoneNumber.substring(1)}',
+      verificationCompleted: (PhoneAuthCredential credential) async {
+        await _auth.signInWithCredential(credential).then((value) {
+          print("Login successfully");
+        });
+      },
+      verificationFailed: (FirebaseAuthException exception) {
+        print('err ${exception.message}');
+      },
+      codeSent: (String verificationId, int? resendCode) {
+        verificationReceivedId = verificationId;
+        isOTPVisible = true;
+        setState(() {});
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {},
+    );
   }
 
   void verifyCode() async {
     print('Verify code');
     PhoneAuthCredential credential = PhoneAuthProvider.credential(
-        verificationId: verificationReceivedId, smsCode: receviedOTP);
-       await _auth.signInWithCredential(credential).then((value) async =>
-         widget.isSignup
-        ? await _auth2.signUpWithEmailPassword(
+      verificationId: verificationReceivedId,
+      smsCode: receivedOTP,
+    );
+    await _auth.signInWithCredential(credential).then(
+      (value) async {
+        if (widget.isSignup) {
+          await _auth2.signUpWithEmailPassword(
             widget.firstName,
             widget.lastName,
             widget.email,
             widget.password,
             widget.confirmPassword,
             widget.phoneNumber,
-            context)
-        : Navigator.push(
+            context,
+          );
+        } else {
+          Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const HomeScreen(),
+              builder: (context) => HomeScreen(id: id),
             ),
-          )
-        );
+          );
+        }
+      },
+    );
   }
 
   String hideNumber(String number) {
@@ -280,8 +286,15 @@ class _OTPVerificationState extends State<OTPVerification> {
     String middleNumbers = "* *** **";
     String lastNumbers = number.substring(number.length - 2);
 
-    String hideNumber = "$firstNumber$middleNumbers$lastNumbers";
+    return "$firstNumber$middleNumbers$lastNumbers";
+  }
 
-    return hideNumber;
+  Future<void> getUserSystemID(String uid) async {
+    String id = await _db.getUserSystemID(uid);
+    if (id.isNotEmpty) {
+      setState(() {
+        this.id = id;
+      });
+    }
   }
 }
